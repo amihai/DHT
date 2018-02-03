@@ -1,6 +1,7 @@
 package ro.amihai.dht.bucketstonodes;
 
 import static java.lang.Math.abs;
+import static java.util.Collections.emptySet;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.mapping;
@@ -11,12 +12,15 @@ import static java.util.stream.Collectors.toSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -31,6 +35,8 @@ import ro.amihai.dht.node.NodeProperties;
 @Component
 public class BucketsToNodesStatistics {
 
+	private Logger logger = LoggerFactory.getLogger(BucketsToNodesStatistics.class);
+	
 	@Autowired
 	private BucketsToNodes bucketsToNodes;
 	
@@ -48,10 +54,13 @@ public class BucketsToNodesStatistics {
 	
 	@PostConstruct
 	private void init() {
+		logger.debug("Initialize the BucketsToNodes statistics");
 		updateStatistics();
 	}
 	
 	public void updateStatistics() {
+		logger.debug("Update Statistics");
+		
 		allNodes = new HashSet<>();
 		allNodes.add(nodeProperties.getCurrentNodeAddress());
 		allNodes.addAll(bucketsToNodes.getBucketsToNodes().values().stream().flatMap(set -> set.stream()).collect(toSet()));
@@ -96,11 +105,20 @@ public class BucketsToNodesStatistics {
 	public int bucket(String key) {
 		return abs(key.hashCode() % nodeProperties.getNoOfBuckets());
 	}
+	
 	public boolean isBucketOnCurrentNode(String key) {
 		return bucketsInCurrentNode.contains(Integer.valueOf(bucket(key)));
 	}
+	
 	public boolean isBucketOnCurrentNode(int bucket) {
 		return bucketsInCurrentNode.contains(Integer.valueOf(bucket));
 	}
 	
+	public Optional<NodeAddress> externalNodeAddressForKey(String key) {
+		int bucket = bucket(key);
+		logger.trace("Search node addres for key {} in bucket {}", key, bucket);
+		return bucketsToNodes.getBucketsToNodes().getOrDefault(bucket, emptySet())
+				.stream().filter(node -> ! node.equals(nodeProperties.getCurrentNodeAddress()))
+				.findFirst();
+	}
 }

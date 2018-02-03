@@ -71,6 +71,7 @@ public class GossipScheduler {
 			URI uriGossip = nodeAddress.getURI("/gossip", null);
 			restTemplate.put(uriGossip, gossip);
 			logger.debug("Done sending gossip {} to node {}", gossip, nodeAddress);
+			return true;
 		} catch (URISyntaxException e) {
 			logger.error("Cannot gossip to node", e);
 		}
