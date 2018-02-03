@@ -9,6 +9,7 @@ import ro.amihai.dht.node.NodeAddress;
 public interface BucketsToNodesDAO {
 	
 	public void saveOrUpdate(Map<Integer, Set<NodeAddress>> bucketsToNodes);
+	public void saveOrUpdate(Integer bucket, Set<NodeAddress> nodeAddreses);
 	public Optional<Map<Integer, Set<NodeAddress>>> load();
 	
 }

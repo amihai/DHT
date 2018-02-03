@@ -54,6 +54,11 @@ public class BucketsToNodesDAOFileSystem implements BucketsToNodesDAO {
 		bucketsToNodesStatistics.updateStatistics();
 	}
 	
+	@Override
+	public void saveOrUpdate(Integer bucket, Set<NodeAddress> nodeAddreses) {
+		storeBucketOnDisk(bucket, nodeAddreses);
+		bucketsToNodesStatistics.updateStatistics();
+	}
 	
 	@Override
 	public Optional<Map<Integer, Set<NodeAddress>>> load() {
@@ -75,14 +80,19 @@ public class BucketsToNodesDAOFileSystem implements BucketsToNodesDAO {
 	}
 	
 	private boolean storeBucketOnDisk(Map.Entry<Integer, Set<NodeAddress>> entry) {
-		Path bucketFilePath = Paths.get(storeDirectory.toString(), format(BUCKET_FILE_NAME, entry.getKey()));
+		return storeBucketOnDisk(entry.getKey(), entry.getValue());
+	}
+	
+	private boolean storeBucketOnDisk(Integer bucket, Set<NodeAddress> nodeAddresses) {
+		Path bucketFilePath = Paths.get(storeDirectory.toString(), format(BUCKET_FILE_NAME, bucket));
 		try {
 			Files.deleteIfExists(bucketFilePath);
-			bucketsToNodesJsonParser.writeNodeAddressesToFile(bucketFilePath.toFile(), entry.getValue());
+			bucketsToNodesJsonParser.writeNodeAddressesToFile(bucketFilePath.toFile(), nodeAddresses);
 		} catch (IOException e) {
 			logger.error("Cannot save to disk the buckets node addresses:", e);
 			return false;
 		}
 		return true;
 	}
+
 }

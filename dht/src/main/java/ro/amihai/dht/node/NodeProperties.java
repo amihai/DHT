@@ -15,7 +15,7 @@ public class NodeProperties {
 	private int noOfBuckets;
 	
 	@NestedConfigurationProperty
-	private NodeAddress nodeAddress = new NodeAddress();
+	private NodeAddress currentNodeAddress = new NodeAddress();
 
 	private String[] initializeFromNodes;
 	
@@ -27,12 +27,12 @@ public class NodeProperties {
 		this.noOfBuckets = noOfBuckets;
 	}
 
-	public NodeAddress getNodeAddress() {
-		return nodeAddress;
+	public NodeAddress getCurrentNodeAddress() {
+		return currentNodeAddress;
 	}
 
-	public void setNodeAddress(NodeAddress nodeAddress) {
-		this.nodeAddress = nodeAddress;
+	public void setCurrentNodeAddress(NodeAddress nodeAddress) {
+		this.currentNodeAddress = nodeAddress;
 	}
 
 	public Optional<String[]> getInitializeFromNodes() {

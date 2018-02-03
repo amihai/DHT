@@ -61,4 +61,10 @@ public class BucketsToNodesDAONetwork implements BucketsToNodesDAO {
 		return Optional.empty();
 	}
 
+	@Override
+	public void saveOrUpdate(Integer bucket, Set<NodeAddress> nodeAddreses) {
+		// TODO Auto-generated method stub
+		
+	}
+
 }

@@ -1,15 +1,26 @@
 package ro.amihai.dht.bucketstonodes;
 
 import static java.lang.Math.abs;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.groupingBy;
+import static java.util.stream.Collectors.mapping;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toSet;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 
 /**
@@ -26,8 +37,10 @@ public class BucketsToNodesStatistics {
 	private NodeProperties nodeProperties;
 	
 	private Set<Integer> bucketsInCurrentNode;
+
+	private Map<NodeAddress, List<Integer>> nodesToBuckets;
 	
-	private long numberOfNodes;
+	private Set<NodeAddress> allNodes;
 	
 	@PostConstruct
 	private void init() {
@@ -35,22 +48,43 @@ public class BucketsToNodesStatistics {
 	}
 	
 	public void updateStatistics() {
-		numberOfNodes = bucketsToNodes.getBucketsToNodes().values()
-				.stream().flatMap(setOfNodes -> setOfNodes.stream())
-				.distinct().count();
+		allNodes = new HashSet<>();
+		allNodes.add(nodeProperties.getCurrentNodeAddress());
+		allNodes.addAll(bucketsToNodes.getBucketsToNodes().values().stream().flatMap(set -> set.stream()).collect(toSet()));
 		
 		bucketsInCurrentNode = bucketsToNodes.getBucketsToNodes().entrySet()
-				.stream().filter(entry -> entry.getValue().contains(nodeProperties.getNodeAddress()))
+				.stream().filter(entry -> entry.getValue().contains(nodeProperties.getCurrentNodeAddress()))
 				.map(entry -> entry.getKey())
 				.collect(Collectors.toSet());
+		
+		nodesToBuckets = bucketsToNodes.getBucketsToNodes().entrySet()
+				.stream().flatMap(this::revertKeyWithValues)
+				.collect(groupingBy(Map.Entry::getKey,
+						mapping(Map.Entry::getValue,        
+                                toList())
+						));
+	}
+	
+	private Stream<Map.Entry<NodeAddress, Integer>> revertKeyWithValues(Map.Entry<Integer, Set<NodeAddress>> entry) {
+		return entry.getValue().stream()
+			.collect(toMap(identity(), na -> entry.getKey()))
+			.entrySet().stream();
 	}
 
 	public long getNumberOfNodes() {
-		return numberOfNodes;
+		return allNodes.size();
+	}
+	
+	public Set<NodeAddress> getAllNodes() {
+		return allNodes;
 	}
 
 	public Set<Integer> getBucketsInCurrentNode() {
 		return bucketsInCurrentNode;
+	}
+	
+	public Map<NodeAddress, List<Integer>> getNodesToBuckets() {
+		return nodesToBuckets;
 	}
 	
 	public int bucket(String key) {

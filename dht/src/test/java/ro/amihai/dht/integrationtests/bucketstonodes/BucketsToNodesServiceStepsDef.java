@@ -55,7 +55,7 @@ public class BucketsToNodesServiceStepsDef {
 
 	@When("^I call the REST API GET \"([^\"]*)\" of the Node$")
 	public void i_call_the_REST_API_GET_of_the_Node(String bucketsToNodesServicePath) throws Throwable {
-		bucketsToNodes = restTemplate.getForObject( nodeProperties.getNodeAddress().getURI(bucketsToNodesServicePath, null), Map.class);
+		bucketsToNodes = restTemplate.getForObject( nodeProperties.getCurrentNodeAddress().getURI(bucketsToNodesServicePath, null), Map.class);
 	}
 
 	@Then("^I receive a JSON with the Buckets To Nodes mapping$")
@@ -71,7 +71,7 @@ public class BucketsToNodesServiceStepsDef {
 			.limit(10)
 			.collect(toMap(identity(), this::dummyNodeAddresses));
 		
-		ResponseEntity<Map> response = restTemplate.postForEntity(nodeProperties.getNodeAddress().getURI(addMappingsPath, null), bucketsToNodesToBeAdded, Map.class);
+		ResponseEntity<Map> response = restTemplate.postForEntity(nodeProperties.getCurrentNodeAddress().getURI(addMappingsPath, null), bucketsToNodesToBeAdded, Map.class);
 		assertTrue("Adding of new mapping failed", response.getStatusCode().is2xxSuccessful());
 		
 		bucketsToNodes = response.getBody();
@@ -101,7 +101,7 @@ public class BucketsToNodesServiceStepsDef {
 		removeMappingPath = removeMappingPath.replaceFirst("\\{node_host\\}", nodeAddressToBeRemoved.getHost());
 		removeMappingPath = removeMappingPath.replaceFirst("\\{node_port\\}", valueOf(nodeAddressToBeRemoved.getPort()));
 		
-		restTemplate.delete((nodeProperties.getNodeAddress().getURI(removeMappingPath, null)));
+		restTemplate.delete((nodeProperties.getCurrentNodeAddress().getURI(removeMappingPath, null)));
 	}
 
 	@Then("^the mapping is removed from the Buckets To Nodes$")

@@ -3,6 +3,8 @@ package ro.amihai.dht.bucketstonodes;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,6 +19,8 @@ import ro.amihai.dht.node.NodeAddress;
 
 @RestController
 public class BucketsToNodesService {
+	
+	private Logger logger = LoggerFactory.getLogger(BucketsToNodesService.class);
 	
 	@Autowired
 	private BucketsToNodes bucketsToNodes;
@@ -40,7 +44,9 @@ public class BucketsToNodesService {
 	@RequestMapping(method={RequestMethod.DELETE},value={"/bucketsToNodes/{bucket}/{node_host}/{node_port}"})
 	public void removeBucketsToNodes(@PathVariable("bucket") Integer bucket, 
 			@PathVariable("node_host") String host, @PathVariable("node_port") int port) {
-		bucketsToNodes.remove(bucket, new NodeAddress(host, port));
+		NodeAddress nodeAdress = new NodeAddress(host, port);
+		logger.debug("Remove Buckets To Node association from bucket {} and node {}", bucket, nodeAdress);
+		bucketsToNodes.remove(bucket, nodeAdress);
 	}
 
 }

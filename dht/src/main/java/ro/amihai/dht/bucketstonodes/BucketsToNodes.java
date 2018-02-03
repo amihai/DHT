@@ -1,7 +1,6 @@
 package ro.amihai.dht.bucketstonodes;
 
 import static java.util.Arrays.asList;
-import static java.util.Collections.emptySet;
 import static java.util.Collections.unmodifiableMap;
 import static java.util.function.Function.identity;
 
@@ -16,6 +15,8 @@ import java.util.stream.Stream;
 
 import javax.annotation.PostConstruct;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -26,6 +27,8 @@ import ro.amihai.dht.node.NodeProperties;
 
 @Component
 public class BucketsToNodes {
+	
+	private Logger logger = LoggerFactory.getLogger(BucketsToNodes.class);
 	
 	private Map<Integer, Set<NodeAddress>> bucketsToNodes;
 	
@@ -40,11 +43,14 @@ public class BucketsToNodes {
 	
 	@PostConstruct
 	public void init() {
+		logger.debug("Initialize the mapping");
 		bucketsToNodes = networkDAO.load().orElseGet(() -> fileSystemDAO.load().orElseGet(this::initialize) ); 
 		fileSystemDAO.saveOrUpdate(bucketsToNodes);
 	}
 
 	public void merge(Map<Integer, Set<NodeAddress>> bucketsToNodesToAdd) {
+		logger.debug("Merge into the current map {}", bucketsToNodesToAdd);
+		
 		bucketsToNodes = Stream.of(bucketsToNodes, bucketsToNodesToAdd)
 			.map(Map::entrySet)
 			.flatMap(Collection::stream)
@@ -59,14 +65,17 @@ public class BucketsToNodes {
 		fileSystemDAO.saveOrUpdate(bucketsToNodes);
 	}
 	
-	public void remove(Integer bucket, NodeAddress nodeAdress) {
-		bucketsToNodes.getOrDefault(bucket, Collections.emptySet()).remove(nodeAdress);
-		fileSystemDAO.saveOrUpdate(bucketsToNodes);
+	public void add(Integer bucket, NodeAddress nodeAdress) {
+		logger.debug("Add bucket {} to node {} mapping", bucket, nodeAdress);
+		
+		bucketsToNodes.getOrDefault(bucket, Collections.emptySet()).add(nodeAdress);
+		fileSystemDAO.saveOrUpdate(bucket, bucketsToNodes.get(bucket));
 	}
-	
-	public void removeBucketFromNode(Integer bucket, NodeAddress nodeAddress) {
-		 bucketsToNodes.getOrDefault(bucket, emptySet()).remove(nodeAddress);
-		 fileSystemDAO.saveOrUpdate(bucketsToNodes);
+	public void remove(Integer bucket, NodeAddress nodeAdress) {
+		logger.debug("Remove bucket {} to node {} mapping", bucket, nodeAdress);
+		
+		bucketsToNodes.getOrDefault(bucket, Collections.emptySet()).remove(nodeAdress);
+		fileSystemDAO.saveOrUpdate(bucket, bucketsToNodes.get(bucket));
 	}
 	
 	public Map<Integer, Set<NodeAddress>> getBucketsToNodes() {
@@ -81,7 +90,7 @@ public class BucketsToNodes {
 	private Map<Integer, Set<NodeAddress>> initialize() {
 		 return IntStream.range(0, nodeProperties.getNoOfBuckets())
 			.boxed()
-			.collect(Collectors.toConcurrentMap(identity(), i -> new HashSet<>(asList(nodeProperties.getNodeAddress()))));
+			.collect(Collectors.toConcurrentMap(identity(), i -> new HashSet<>(asList(nodeProperties.getCurrentNodeAddress()))));
 	}
 	
 }

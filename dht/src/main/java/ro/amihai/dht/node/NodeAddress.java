@@ -68,6 +68,13 @@ public class NodeAddress {
 			return false;
 		return true;
 	}
+
+	@Override
+	public String toString() {
+		return "NodeAddress [host=" + host + ", port=" + port + "]";
+	}
+	
+	
 	
 	
 }
