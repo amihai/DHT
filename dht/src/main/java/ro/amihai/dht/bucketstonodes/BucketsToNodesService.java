@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import ro.amihai.dht.gossip.GossipRegistry;
+import ro.amihai.dht.keyvaluestore.size.BucketSize;
+import ro.amihai.dht.keyvaluestore.size.BucketsSizeCache;
 import ro.amihai.dht.node.NodeAddress;
 
 @RestController
@@ -29,11 +31,21 @@ public class BucketsToNodesService {
 	@Autowired
 	private GossipRegistry gossipRegistry;
 	
+	@Autowired
+	private BucketsSizeCache bucketsSizeCache;
+	
 	@ApiOperation("Return the Mapping between Buckets and Nodes")
 	@RequestMapping(method={RequestMethod.GET},value={"/bucketsToNodes"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<Integer, Set<NodeAddress>> getBucketsToNodes() {
 		return bucketsToNodes.getBucketsToNodes();
+	}
+	
+	@ApiOperation("Return the Size of each Bucket")
+	@RequestMapping(method={RequestMethod.GET},value={"/buckets/size"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public Map<Integer, BucketSize> getBucketsSize() {
+		return bucketsSizeCache.getBucketSize();
 	}
 	
 	@ApiOperation("Merge the internal Mapping with the one received")

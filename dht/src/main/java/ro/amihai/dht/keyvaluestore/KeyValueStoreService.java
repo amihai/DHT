@@ -14,11 +14,16 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import ro.amihai.dht.keyvaluestore.size.BucketsSizeCache;
+
 @RestController()
 public class KeyValueStoreService {
 
 	@Autowired
 	private KeyValueStorage keyValueStorage;
+	
+	@Autowired
+	private BucketsSizeCache bucketsSizeCache;
 	
 	@RequestMapping(method={RequestMethod.PUT},value={"/keyValue"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
@@ -37,6 +42,14 @@ public class KeyValueStoreService {
 		return keyValue
 				.map(ResponseEntity::ok)
 				.orElseGet(() -> ResponseEntity.unprocessableEntity().body(null));
+	}
+	
+	@RequestMapping(method={RequestMethod.GET},value={"/keyValue/size"}, produces = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseBody
+	public ResponseEntity<Long> getSize() {
+		return ResponseEntity.ok(bucketsSizeCache.getBucketSize().entrySet()
+				.stream().mapToLong(entry -> entry.getValue().getSize())
+				.sum());
 	}
 	
 	@RequestMapping(method={RequestMethod.DELETE},value={"/keyValue/{key}"}, produces = MediaType.APPLICATION_JSON_VALUE)
