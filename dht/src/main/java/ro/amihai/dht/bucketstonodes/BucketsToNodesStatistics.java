@@ -1,5 +1,7 @@
 package ro.amihai.dht.bucketstonodes;
 
+import static java.lang.Math.abs;
+
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -29,7 +31,7 @@ public class BucketsToNodesStatistics {
 	
 	@PostConstruct
 	private void init() {
-
+		updateStatistics();
 	}
 	
 	public void updateStatistics() {
@@ -50,7 +52,15 @@ public class BucketsToNodesStatistics {
 	public Set<Integer> getBucketsInCurrentNode() {
 		return bucketsInCurrentNode;
 	}
-
 	
+	public int bucket(String key) {
+		return abs(key.hashCode() % nodeProperties.getNoOfBuckets());
+	}
+	public boolean isBucketOnCurrentNode(String key) {
+		return bucketsInCurrentNode.contains(Integer.valueOf(bucket(key)));
+	}
+	public boolean isBucketOnCurrentNode(int bucket) {
+		return bucketsInCurrentNode.contains(Integer.valueOf(bucket));
+	}
 	
 }

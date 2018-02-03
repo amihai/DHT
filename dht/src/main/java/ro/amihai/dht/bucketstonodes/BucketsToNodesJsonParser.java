@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -71,16 +70,6 @@ public class BucketsToNodesJsonParser {
 		} catch (IOException e) {
 			logger.error("Error reading NodeAdresses from file", e);
 			return Collections.emptySet();
-		}
-	}
-	
-	
-	private Stream<NodeAddress> fromJsonNodeAdress(String nodeAddressAsJson) {
-		try {
-			return Stream.of(objectMapper.readValue(nodeAddressAsJson, NodeAddress.class));
-		} catch (IOException e) {
-			logger.error("Error reading NodeAdress from JSON", e);
-			return Stream.empty();
 		}
 	}
 	

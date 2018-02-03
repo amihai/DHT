@@ -70,7 +70,12 @@ public class BucketsToNodes {
 	}
 	
 	public Map<Integer, Set<NodeAddress>> getBucketsToNodes() {
-		return unmodifiableMap(bucketsToNodes);
+		if (null != bucketsToNodes) {
+			return unmodifiableMap(bucketsToNodes);
+		} else {
+			return Collections.emptyMap();
+		}
+		
 	}
 	
 	private Map<Integer, Set<NodeAddress>> initialize() {
