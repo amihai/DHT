@@ -33,11 +33,6 @@ public class BucketsToNodesDAONetwork implements BucketsToNodesDAO {
 	private BucketsToNodesJsonParser bucketsToNodesJsonParser;
 	
 	@Override
-	public void saveOrUpdate(Map<Integer, Set<NodeAddress>> bucketsToNodes) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
 	public Optional<Map<Integer, Set<NodeAddress>>> load() {
 		logger.debug("Load Buckets To Nodes mapping from the network");
 		
@@ -63,8 +58,13 @@ public class BucketsToNodesDAONetwork implements BucketsToNodesDAO {
 
 	@Override
 	public void saveOrUpdate(Integer bucket, Set<NodeAddress> nodeAddreses) {
-		// TODO Auto-generated method stub
-		
+		throw new UnsupportedOperationException("The Buckets TO Nodes mapping is propagated on the newtwork using the Gossip Service");
 	}
+	
+	@Override
+	public void saveOrUpdate(Map<Integer, Set<NodeAddress>> bucketsToNodes) {
+		throw new UnsupportedOperationException("The Buckets TO Nodes mapping is propagated on the newtwork using the Gossip Service");
+	}
+
 
 }

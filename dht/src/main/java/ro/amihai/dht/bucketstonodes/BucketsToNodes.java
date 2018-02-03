@@ -71,11 +71,19 @@ public class BucketsToNodes {
 		bucketsToNodes.getOrDefault(bucket, Collections.emptySet()).add(nodeAdress);
 		fileSystemDAO.saveOrUpdate(bucket, bucketsToNodes.get(bucket));
 	}
+	
 	public void remove(Integer bucket, NodeAddress nodeAdress) {
 		logger.debug("Remove bucket {} to node {} mapping", bucket, nodeAdress);
 		
 		bucketsToNodes.getOrDefault(bucket, Collections.emptySet()).remove(nodeAdress);
 		fileSystemDAO.saveOrUpdate(bucket, bucketsToNodes.get(bucket));
+	}
+	
+	public void removeAll(Map<Integer, Set<NodeAddress>> bucketsToNodes) {
+		logger.debug("Remove all buckest to nodes mapping {} ", bucketsToNodes);
+		bucketsToNodes.entrySet().forEach(entry -> {
+			entry.getValue().forEach(node -> this.remove(entry.getKey(), node));
+		});
 	}
 	
 	public Map<Integer, Set<NodeAddress>> getBucketsToNodes() {

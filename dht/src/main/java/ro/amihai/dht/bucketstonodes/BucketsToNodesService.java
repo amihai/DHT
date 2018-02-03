@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
+import ro.amihai.dht.gossip.GossipRegistry;
 import ro.amihai.dht.node.NodeAddress;
 
 @RestController
@@ -24,6 +25,9 @@ public class BucketsToNodesService {
 	
 	@Autowired
 	private BucketsToNodes bucketsToNodes;
+	
+	@Autowired
+	private GossipRegistry gossipRegistry;
 	
 	@ApiOperation("Return the Mapping between Buckets and Nodes")
 	@RequestMapping(method={RequestMethod.GET},value={"/bucketsToNodes"}, produces = MediaType.APPLICATION_JSON_VALUE)
@@ -37,6 +41,7 @@ public class BucketsToNodesService {
 	@ResponseBody
 	public Map<Integer, Set<NodeAddress>> addBucketsToNodes(@RequestBody Map<Integer, Set<NodeAddress>> bucketsToNodesToAdd) {
 		bucketsToNodes.merge(bucketsToNodesToAdd);
+		gossipRegistry.gossipBucketsToNodesMappingAdded(bucketsToNodesToAdd);
 		return bucketsToNodes.getBucketsToNodes();
 	}
 	

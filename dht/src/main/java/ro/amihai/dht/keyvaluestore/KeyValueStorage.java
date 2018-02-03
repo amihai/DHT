@@ -19,6 +19,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.gossip.GossipRegistry;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDAOFileSystem;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDaoNetwork;
 
@@ -39,9 +40,13 @@ public class KeyValueStorage {
 	@Value("${keyValue.storeDirectory}")
 	private Path storeDirectory;
 	
+	@Autowired
+	private GossipRegistry gossipRegistry;
+	
 	public boolean store(KeyValue keyValue) {
 		if (bucketsToNodesStatistics.isBucketOnCurrentNode(keyValue.getKey())) {
 			logger.debug("Store key {} on current node", keyValue.getKey());
+			gossipRegistry.gossipKeyValueAdded(keyValue);
 			return keyValueDAOFileSystem.saveOrUpdate(keyValue);
 		} else {
 			logger.debug("Store key {} on the network", keyValue.getKey());
@@ -62,6 +67,7 @@ public class KeyValueStorage {
 	public Optional<KeyValue> delete(String key) {
 		if (bucketsToNodesStatistics.isBucketOnCurrentNode(key)) {
 			logger.debug("Delete key {} from the current node", key);
+			gossipRegistry.gossipKeyRemoved(key);
 			return keyValueDAOFileSystem.delete(key);
 		} else {
 			logger.debug("Delete key {} from the network", key);

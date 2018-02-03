@@ -27,6 +27,7 @@ import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodes;
+import ro.amihai.dht.gossip.GossipRegistry;
 import ro.amihai.dht.keyvaluestore.KeyValue;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDAOFileSystem;
 import ro.amihai.dht.node.NodeAddress;
@@ -53,6 +54,9 @@ public class BucketsBalancerOperations {
 	
 	@Autowired
 	private RestTemplate restTemplate;
+	
+	@Autowired
+	private GossipRegistry gossipRegistry;
 	
 	public void transferBucket(Integer bucket, NodeAddress node) {
 		logger.info("Start to transfer bucket {} from node {}", bucket, node);
@@ -117,6 +121,7 @@ public class BucketsBalancerOperations {
 	
 	private boolean saveKeyValue(Object json) {
 		KeyValue keyValue = new ObjectMapper().convertValue(json, KeyValue.class);
+		gossipRegistry.gossipKeyValueAdded(keyValue);
 		return keyValueDAOFileSystem.saveOrUpdate(keyValue);
 	}
 	
