@@ -7,7 +7,6 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toMap;
 
 import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Map;
@@ -85,14 +84,7 @@ public class BucketsToNodesDAOFileSystem implements BucketsToNodesDAO {
 	
 	private boolean storeBucketOnDisk(Integer bucket, Set<NodeAddress> nodeAddresses) {
 		Path bucketFilePath = Paths.get(storeDirectory.toString(), format(BUCKET_FILE_NAME, bucket));
-		try {
-			Files.deleteIfExists(bucketFilePath);
-			bucketsToNodesJsonParser.writeNodeAddressesToFile(bucketFilePath.toFile(), nodeAddresses);
-		} catch (IOException e) {
-			logger.error("Cannot save to disk the buckets node addresses:", e);
-			return false;
-		}
-		return true;
+		return bucketsToNodesJsonParser.writeNodeAddressesToFile(bucketFilePath.toFile(), nodeAddresses);
 	}
 
 }

@@ -1,6 +1,7 @@
 package ro.amihai.dht.gossip;
 
 import static java.util.Collections.shuffle;
+import static ro.amihai.dht.health.NodeStatus.UNBALANCED;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -18,6 +19,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.health.NodeHealth;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 
@@ -38,18 +40,27 @@ public class GossipScheduler {
 	@Autowired
 	private RestTemplate restTemplate;
 	
+	@Autowired
+	private NodeHealth nodeHealth;
+	
 	@Scheduled(fixedRateString="${gossip.fixedRate}")
 	private void gossip() {
-		Queue<Gossip> gossipToDo = gossipRegistry.getGossipToDo();
-		while(!gossipToDo.isEmpty()) {
-			Gossip nextGossip = gossipToDo.poll();
-			CircularFifoQueue<Gossip> gossipsDone = gossipRegistry.getGossipsDone();
-			if(gossipsDone.contains(nextGossip)) {
-				logger.info("Gossip already sent: {}", nextGossip);
-			} else {
-				gossipMembers().forEach(node -> gossipToNode(nextGossip, node));
-				gossipsDone.add(nextGossip);
-				logger.info("Gossip done for: {}", nextGossip);
+		if (UNBALANCED == nodeHealth.getNodeStatus()) {
+			logger.debug("Current node is not yet balanced. Gossip will start after the node is balanced");
+		} else {
+			logger.trace("Current node is balanced. Start Gossip scheduler");
+			
+			Queue<Gossip> gossipToDo = gossipRegistry.getGossipToDo();
+			while(!gossipToDo.isEmpty()) {
+				Gossip nextGossip = gossipToDo.poll();
+				CircularFifoQueue<Gossip> gossipsDone = gossipRegistry.getGossipsDone();
+				if(gossipsDone.contains(nextGossip)) {
+					logger.info("Gossip already sent: {}", nextGossip);
+				} else {
+					gossipMembers().forEach(node -> gossipToNode(nextGossip, node));
+					gossipsDone.add(nextGossip);
+					logger.info("Gossip done for: {}", nextGossip);
+				}
 			}
 		}
 	}

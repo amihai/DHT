@@ -26,6 +26,12 @@ public class Gossip {
 		
 	}
 	
+	@Override
+	public String toString() {
+		return "Gossip [uuid=" + uuid + ", action=" + action + ", keyValue=" + keyValue + ", bucketsToNodes="
+				+ bucketsToNodes + "]";
+	}
+
 	public Gossip(GossipAction action, KeyValue keyValue) {
 		this.uuid = UUID.randomUUID();
 		this.action = action;

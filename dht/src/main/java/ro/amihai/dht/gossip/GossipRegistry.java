@@ -44,10 +44,10 @@ public class GossipRegistry {
 	
 	public boolean registerGossip(Gossip gossip) {
 		if (gossipsDone.contains(gossip)) {
-			logger.info("Gossip already done:" , gossip);
+			logger.info("Gossip already done: {}" , gossip);
 			return false;
 		} else {
-			logger.info("Gossip registered:" , gossip);
+			logger.info("Gossip registered: {}" , gossip);
 			gossipToDo.add(gossip);
 			return true;
 		}
@@ -55,22 +55,22 @@ public class GossipRegistry {
 	
 	public void gossipKeyRemoved(String key) {
 		logger.debug("Register gossip of Removing key {}", key);
-		gossipToDo.add(new Gossip(REMOVE, new KeyValue(key, null)));
+		registerGossip(new Gossip(REMOVE, new KeyValue(key, null)));
 	}
 
 	public void gossipKeyValueAdded(KeyValue keyValue) {
 		logger.debug("Register gossip of adding key value mapping {}", keyValue);
-		gossipToDo.add(new Gossip(ADD, keyValue));
+		registerGossip(new Gossip(ADD, keyValue));
 	}
 	
 	public void gossipBucketsToNodesMappingAdded(Map<Integer, Set<NodeAddress>> bucketsToNodesToAdd) {
-		gossipToDo.add(new Gossip(ADD, bucketsToNodesToAdd));
+		registerGossip(new Gossip(ADD, bucketsToNodesToAdd));
 	}
 	
 	public void gossipBucketsToNodesMappingRemoved(Integer bucket, NodeAddress nodeAddress) {
 		Map<Integer, Set<NodeAddress>> mappingToRemove = new HashMap<>();
 		mappingToRemove.put(bucket, of(nodeAddress).collect(toSet()));
-		gossipToDo.add(new Gossip(ADD, mappingToRemove));
+		registerGossip(new Gossip(ADD, mappingToRemove));
 	}
 	
 	public CircularFifoQueue<Gossip> getGossipsDone() {

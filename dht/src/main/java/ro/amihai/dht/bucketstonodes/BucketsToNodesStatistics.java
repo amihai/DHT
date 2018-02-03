@@ -20,6 +20,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import ro.amihai.dht.health.NodeHealth;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 
@@ -40,6 +41,9 @@ public class BucketsToNodesStatistics {
 
 	private Map<NodeAddress, List<Integer>> nodesToBuckets;
 	
+	@Autowired
+	private NodeHealth nodeHealth;
+	
 	private Set<NodeAddress> allNodes;
 	
 	@PostConstruct
@@ -56,6 +60,8 @@ public class BucketsToNodesStatistics {
 				.stream().filter(entry -> entry.getValue().contains(nodeProperties.getCurrentNodeAddress()))
 				.map(entry -> entry.getKey())
 				.collect(Collectors.toSet());
+		
+		nodeHealth.setNoOfBuckets(bucketsInCurrentNode.size());
 		
 		nodesToBuckets = bucketsToNodes.getBucketsToNodes().entrySet()
 				.stream().flatMap(this::revertKeyWithValues)

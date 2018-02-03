@@ -80,7 +80,7 @@ public class BucketsBalancerOperations {
 		Integer bucket = bucketAndNodes.getKey();
 		if (firstNode.isPresent()) {
 			NodeAddress nodeAddress = firstNode.get();
-			logger.info("Start to copy bucket {} from node ", bucket, nodeAddress);
+			logger.info("Start to copy bucket {} from node {}", bucket, nodeAddress);
 			return copyBucketFromNode(bucket, nodeAddress);
 		} else {
 			logger.error("Bucket {} is not stored into the network", bucket);

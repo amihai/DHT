@@ -1,11 +1,11 @@
 package ro.amihai.dht.node.balancer;
 
+import static ro.amihai.dht.health.NodeStatus.BALANCED;
+import static ro.amihai.dht.health.NodeStatus.UNBALANCED;
+
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodes;
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.health.NodeHealth;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 
@@ -49,16 +50,42 @@ public class BucketsBalancer {
 	@Autowired
 	private BucketsBalancerOperations bucketsBalancerOperations;
 	
+	@Autowired
+	private NodeHealth nodeHealth;
+	
+	@Autowired
+	private ParentNodesBalancedLatch parentNodesBalancedLatch;
+	
 	@Scheduled(fixedRateString = "${bucketsToNodes.balancing.rate}", initialDelayString = "${bucketsToNodes.balancing.initialDelay}")
-	public void balanceBuckets() {
+	public void balanceBuckets() throws InterruptedException {
+		parentNodesBalancedLatch.awaitForAParentNodeToBeBalanced();
+		
 		logger.info("Start the Buckets balancing");
 		
-		//First we check if any bucket is store on a number of nodes less than the replication factor
-		bucketsNotReplicated().entrySet().forEach(bucketsBalancerOperations::copyBucket);
-		
+		//Check if any bucket is store on a number of nodes less than the replication factor
+		copyBucketsNotReplicated();
+				
+		transferBucketsFromBusyNodes();
+				
+		nodeHealth.setNodeStatus(BALANCED);
+		logger.info("Bucket Balancing is done");
+	}
+
+	private void copyBucketsNotReplicated() {
+		bucketsToNodes.getBucketsToNodes().entrySet()
+			.stream()
+			.filter(entry -> ! entry.getValue().contains(nodeProperties.getCurrentNodeAddress())) //Filter the buckets already stored o current node
+			.filter(entry -> entry.getValue().size() < replicationFactor) //Keep only the buckets not replicated
+			.forEach(bucketsBalancerOperations::copyBucket);
+	}
+
+	private void transferBucketsFromBusyNodes() {
 		int noOfBucketsInCurrentNode = bucketsToNodesStatistics.getBucketsInCurrentNode().size();
+		logger.debug("NoOfBucketsInCurrentNode {}", noOfBucketsInCurrentNode);
+		
 		//Than check if any other node is loaded more than currentNode
 		while(noOfBucketsInCurrentNode < minimumNumberOfBucketsPerNode()) {
+			nodeHealth.setNodeStatus(UNBALANCED);
 			logger.info("Start to search a busy node to transfer from");
 			
 			//Search if other nodes are busy and transfer some buckets from them
@@ -87,18 +114,6 @@ public class BucketsBalancer {
 				break;
 			}
 		}
-		
-		logger.info("Bucket Balancing is done");
-	}
-	
-	
-	
-	private Map<Integer, Set<NodeAddress>> bucketsNotReplicated() {
-		return bucketsToNodes.getBucketsToNodes().entrySet()
-			.stream()
-			.filter(entry -> ! entry.getValue().contains(nodeProperties.getCurrentNodeAddress())) //Filter the buckets already stored o current node
-			.filter(entry -> entry.getValue().size() < replicationFactor)
-			.collect(Collectors.toMap(Entry::getKey, Entry::getValue));
 	}
 	
 	private int minimumNumberOfBucketsPerNode() {
@@ -107,6 +122,7 @@ public class BucketsBalancer {
 		
 		int noOfBuckets = nodeProperties.getNoOfBuckets();
 		int minimumNumberOfBucketsPerNode = (int) Math.ceil(replicationFactor * noOfBuckets / numberOfNodes); 
+		logger.debug("Minimum Number Of Buckets Per Node: {}", minimumNumberOfBucketsPerNode);
 		return Math.min(minimumNumberOfBucketsPerNode, noOfBuckets);
 	}
 }
