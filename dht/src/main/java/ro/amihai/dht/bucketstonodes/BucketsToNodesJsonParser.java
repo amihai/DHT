@@ -19,6 +19,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import ro.amihai.dht.keyvaluestore.size.BucketSize;
 import ro.amihai.dht.node.NodeAddress;
 
 @Component
@@ -33,15 +34,22 @@ public class BucketsToNodesJsonParser {
 		return jsonMap.entrySet().stream()
 			.collect(Collectors.toMap(
 					entry -> Integer.valueOf(entry.getKey()), 
-					entry-> fromJsonListToSetNodeAddress(entry.getValue())));
+					entry-> mapToListToSetNodeAddress(entry.getValue())));
 	}
 	
-	private Set<NodeAddress> fromJsonListToSetNodeAddress(List<Map<String, String>> nodeAddressesDetails) {
+	public Map<Integer, BucketSize> fromBuckesSizeJson(Map<String, Map<String, Object>> jsonMap) {
+		return jsonMap.entrySet().stream()
+			.collect(Collectors.toMap(
+					entry -> Integer.valueOf(entry.getKey()), 
+					entry-> maptToBucketSize(entry.getValue())));
+	}
+	
+	private Set<NodeAddress> mapToListToSetNodeAddress(List<Map<String, String>> nodeAddressesDetails) {
 		return nodeAddressesDetails.stream()
 				.map(this::fromJsonMapDetailsToNodeAdress)
 				.collect(Collectors.toSet());
 	}
-	private Set<NodeAddress> fromJsonSetNodeAddress(String json) {
+	private Set<NodeAddress> mapToSetNodeAddress(String json) {
 		try {
 			Set<Map> readValue = objectMapper.readValue(json, Set.class);
 			return readValue.stream()
@@ -51,6 +59,20 @@ public class BucketsToNodesJsonParser {
 			logger.error("Error converting Set of NodeAdress Json into Object", e);
 			return Collections.emptySet();
 		}
+	}
+	
+	public Map<Integer, BucketSize> mapToBucketsSize(Map<String, Map<String, Object>> jsonMap) {
+		return jsonMap.entrySet().stream()
+				.collect(Collectors.toMap(
+						entry -> Integer.valueOf(entry.getKey()), 
+						entry-> maptToBucketSize(entry.getValue())));
+	}
+	
+	public BucketSize maptToBucketSize(Map<String, Object> jsonAsMap) {
+		int bucket = Integer.parseInt(valueOf(jsonAsMap.get("bucket")));
+		long size = Long.parseLong(valueOf(jsonAsMap.get("size")));
+		long lastUpdate = Long.parseLong(valueOf(jsonAsMap.get("lastUpdate")));
+		return new BucketSize(bucket, size, lastUpdate);
 	}
 	
 	public boolean writeNodeAddressesToFile(File bucketFile, Set<NodeAddress> nodeAddresses) {
@@ -66,7 +88,7 @@ public class BucketsToNodesJsonParser {
 	public Set<NodeAddress> readNodeAddressesFromFile(Path bucketFile) {
 		try {
 			String json = new String(readAllBytes(bucketFile));
-			return fromJsonSetNodeAddress(json);
+			return mapToSetNodeAddress(json);
 		} catch (IOException e) {
 			logger.error("Error reading NodeAdresses from file", e);
 			return Collections.emptySet();

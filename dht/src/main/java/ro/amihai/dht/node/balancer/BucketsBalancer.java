@@ -74,7 +74,7 @@ public class BucketsBalancer {
 	private void copyBucketsNotReplicated() {
 		bucketsToNodes.getBucketsToNodes().entrySet()
 			.stream()
-			.filter(entry -> ! entry.getValue().contains(nodeProperties.getCurrentNodeAddress())) //Filter the buckets already stored o current node
+			.filter(entry -> ! entry.getValue().contains(nodeProperties.getCurrentNodeAddress())) //Filter the buckets already stored on current node
 			.filter(entry -> entry.getValue().size() < replicationFactor) //Keep only the buckets not replicated
 			.forEach(bucketsBalancerOperations::copyBucket);
 	}
@@ -92,7 +92,7 @@ public class BucketsBalancer {
 			Optional<Entry<NodeAddress, List<Integer>>> busyNode = bucketsToNodesStatistics.getNodesToBuckets()
 				.entrySet().stream()
 				.filter(entry -> entry.getValue().size() > minimumNumberOfBucketsPerNode()) //Filter the nodes that are not busy
-				.sorted((e1, e2) -> e2.getValue().size() - e1.getValue().size())
+				.sorted((e1, e2) -> e2.getValue().size() - e1.getValue().size()) //Transfer from the busiest node
 				.findFirst();
 			
 			if (busyNode.isPresent()) {

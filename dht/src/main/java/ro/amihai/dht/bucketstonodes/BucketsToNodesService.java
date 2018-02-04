@@ -45,7 +45,7 @@ public class BucketsToNodesService {
 	@RequestMapping(method={RequestMethod.GET},value={"/buckets/size"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Map<Integer, BucketSize> getBucketsSize() {
-		return bucketsSizeCache.getBucketSize();
+		return bucketsSizeCache.getBucketsSize();
 	}
 	
 	@ApiOperation("Merge the internal Mapping with the one received")

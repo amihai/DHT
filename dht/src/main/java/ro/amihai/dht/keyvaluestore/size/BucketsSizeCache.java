@@ -5,13 +5,15 @@ import static java.lang.System.currentTimeMillis;
 import static java.util.function.Function.identity;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.Collection;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -19,23 +21,40 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
+import org.springframework.web.client.RestTemplate;
 
+import ro.amihai.dht.bucketstonodes.BucketsToNodesJsonParser;
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.gossip.GossipMemebers;
+import ro.amihai.dht.node.NodeAddress;
 
 @Component
 public class BucketsSizeCache {
 
 	private Logger logger = LoggerFactory.getLogger(BucketsSizeCache.class);
 	
-	private Map<Integer, BucketSize> bucketSize = new ConcurrentHashMap<>();
+	private Map<Integer, BucketSize> bucketsSize = new HashMap<>();
 	
 	@Autowired
 	private BucketsToNodesStatistics bucketsToNodesStatistics;
 	
 	@Value("${keyValue.storeDirectory}")
 	private Path storeDirectory;
+	
+	@Autowired
+	private BucketsSizeOperations bucketsSizeOperations;
+	
+	@Autowired
+	private GossipMemebers gossipMemebers;
+	
+	@Autowired
+	private RestTemplate restTemplate;
+	
+	@Autowired
+	private BucketsToNodesJsonParser bucketsToNodesJsonParser;
 	
 	@Scheduled(fixedRateString="${bucketsSizeCache.refresh.rate}")
 	private void updateBucketsSizeCache() {
@@ -44,39 +63,52 @@ public class BucketsSizeCache {
 		updateBucketSizeFromNetwork();
 	}
 
-	public Map<Integer, BucketSize> getBucketSize() {
-		return bucketSize;
+	public Map<Integer, BucketSize> getBucketsSize() {
+		return bucketsSize;
 	}
 	
-	public void updateBucketSizeFromCurrentNode() {
+	private void updateBucketSizeFromCurrentNode() {
+		logger.debug("Start to update the size of the buckets from the current node");
 		Map<Integer, BucketSize> bucketsSizeFromFS = bucketsToNodesStatistics.getBucketsInCurrentNode()
 			.stream().map(this::getBucketSizeFromFileSystem)
 			.flatMap(optional -> optional.map(Stream::of).orElseGet(Stream::empty))
 			.collect(Collectors.toMap(bucketSize -> bucketSize.getBucket(), identity()));
 		
-		mergeBucketSize(bucketsSizeFromFS);
+		bucketsSize = bucketsSizeOperations.merge(bucketsSizeFromFS, bucketsSize);
+		logger.debug("Done updating the size of the buckets from the current node");
 	}
 	
-	public void updateBucketSizeFromNetwork() {
-		//TODO call external
-	}
-	
-	private void mergeBucketSize(Map<Integer, BucketSize> bucketsSizeToBeMerged) {
-		bucketSize = Stream.of(bucketSize, bucketsSizeToBeMerged)
+	private void updateBucketSizeFromNetwork() {
+		logger.debug("Start to update the size of the buckets from the network");
+		Map<Integer, BucketSize> bucketSizeFromNetwork = gossipMemebers.shuffledGossipMembers()
+			.stream()
+			.map(this::getBucketsSizeFromNode)
+			.flatMap(optional -> optional.map(Stream::of).orElse(Stream.empty())) //Stream of Map<Integer, BucketSize>
 			.map(Map::entrySet)
-			.flatMap(Collection::stream)
-			.collect(
-					Collectors.toConcurrentMap(
-							Map.Entry::getKey, 
-							Map.Entry::getValue,
-							this::latestBucketSize
-							)
+			.flatMap(Set::stream)
+			.collect(Collectors.toMap(
+						Map.Entry::getKey, 
+						Map.Entry::getValue,
+						bucketsSizeOperations::latestBucketSize)
 					);
 		
+		bucketsSize = bucketsSizeOperations.merge(bucketSizeFromNetwork, bucketsSize);
+		logger.debug("Done updating the size of the buckets from the network");
 	}
 	
-	private BucketSize latestBucketSize(BucketSize b1, BucketSize b2) {
-		return b1.getLastUpdate() > b2.getLastUpdate() ? b1 : b2;
+	private Optional<Map<Integer, BucketSize>> getBucketsSizeFromNode(NodeAddress nodeAddress) {
+		logger.debug("Start to read the buckets size from node {}", nodeAddress);
+		try {
+			URI uriGetBucketsSize = nodeAddress.getURI("/buckets/size", null);
+			ResponseEntity<Map> response = restTemplate.getForEntity(uriGetBucketsSize, Map.class);
+			if (response.getStatusCode().is2xxSuccessful()) {
+				Map<String, Map<String, Object>> jsonAsMap = response.getBody();
+				return Optional.ofNullable(bucketsToNodesJsonParser.mapToBucketsSize(jsonAsMap));
+			}
+		} catch (URISyntaxException e) {
+			logger.error("Cannot read the buckets size from node {}:", nodeAddress, e);
+		}
+		return Optional.empty();
 	}
 	
 	private Optional<BucketSize> getBucketSizeFromFileSystem(Integer bucket) {
@@ -89,7 +121,6 @@ public class BucketsSizeCache {
 			} catch (IOException e) {
 				logger.error("Cannot read bucket size from disk", e);
 			}
-			
 		}
 		return Optional.empty();
 	}

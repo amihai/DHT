@@ -47,7 +47,7 @@ public class KeyValueStoreService {
 	@RequestMapping(method={RequestMethod.GET},value={"/keyValue/size"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Long> getSize() {
-		return ResponseEntity.ok(bucketsSizeCache.getBucketSize().entrySet()
+		return ResponseEntity.ok(bucketsSizeCache.getBucketsSize().entrySet()
 				.stream().mapToLong(entry -> entry.getValue().getSize())
 				.sum());
 	}

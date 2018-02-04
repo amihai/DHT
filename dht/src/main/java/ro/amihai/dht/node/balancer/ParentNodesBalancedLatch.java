@@ -1,8 +1,6 @@
 package ro.amihai.dht.node.balancer;
 
 import static java.lang.String.join;
-import static org.assertj.core.util.Arrays.array;
-import static org.assertj.core.util.Arrays.isNullOrEmpty;
 import static ro.amihai.dht.health.NodeStatus.BALANCED;
 
 import java.util.Optional;
@@ -39,8 +37,8 @@ public class ParentNodesBalancedLatch {
 	@PostConstruct
 	private void init() {
 		Optional<String[]> initializeFromNodes = nodeProperties.getInitializeFromNodes();
-		String[] parentNodes = initializeFromNodes.orElseGet(() -> array());
-		if (isNullOrEmpty(parentNodes)) {
+		String[] parentNodes = initializeFromNodes.orElseGet(() -> new String[0]);
+		if (parentNodes.length == 0) {
 			logger.info("No parent to check if balanced");
 			parentNodesToBeBalanced = new CountDownLatch(0);
 		} else {
