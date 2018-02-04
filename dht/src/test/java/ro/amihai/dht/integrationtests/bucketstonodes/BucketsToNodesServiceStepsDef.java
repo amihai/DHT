@@ -7,6 +7,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -14,26 +16,20 @@ import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootContextLoader;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.ResponseEntity;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.web.client.RestTemplate;
 
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import ro.amihai.dht.DhtApplication;
 import ro.amihai.dht.bucketstonodes.BucketsToNodesService;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 
-
-
-@ContextConfiguration( classes = DhtApplication.class, loader=SpringBootContextLoader.class)
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
-public class BucketsToNodesServiceStepsDef {
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, properties= {"bucketsToNodes.storeDirectory=target/bucketsToNodes2", "server.port=8001"})
+public class BucketsToNodesServiceStepsDef extends SpringIntegrationStepDef {
 
 	@Autowired
 	private RestTemplate restTemplate;
@@ -44,7 +40,7 @@ public class BucketsToNodesServiceStepsDef {
 	@Autowired
 	private BucketsToNodesService bucketsToNodesService;
 	
-	private Map<Integer, Set<NodeAddress>> bucketsToNodes;
+	private Map<Integer, Set<NodeAddress>> bucketsToNodesReceived;
 	private Map<Integer, Set<NodeAddress>> bucketsToNodesToBeAdded;
 	private NodeAddress nodeAddressToBeRemoved;
 	
@@ -55,12 +51,12 @@ public class BucketsToNodesServiceStepsDef {
 
 	@When("^I call the REST API GET \"([^\"]*)\" of the Node$")
 	public void i_call_the_REST_API_GET_of_the_Node(String bucketsToNodesServicePath) throws Throwable {
-		bucketsToNodes = restTemplate.getForObject( nodeProperties.getCurrentNodeAddress().getURI(bucketsToNodesServicePath, null), Map.class);
+		bucketsToNodesReceived = restTemplate.getForObject( nodeProperties.getCurrentNodeAddress().getURI(bucketsToNodesServicePath, null), Map.class);
 	}
 
 	@Then("^I receive a JSON with the Buckets To Nodes mapping$")
 	public void i_receive_a_JSON_with_the_Buckets_To_Nodes_mapping() throws Throwable {
-		assertEquals("The number of Buckets from the map is invalid", nodeProperties.getNoOfBuckets(), bucketsToNodes.size());
+		assertEquals("The number of Buckets from the map is invalid", nodeProperties.getNoOfBuckets(), bucketsToNodesReceived.size());
 	}
 
 	@When("^I call the REST API POST \"([^\"]*)\" of the Node with a JSON with new mappings$")
@@ -74,7 +70,7 @@ public class BucketsToNodesServiceStepsDef {
 		ResponseEntity<Map> response = restTemplate.postForEntity(nodeProperties.getCurrentNodeAddress().getURI(addMappingsPath, null), bucketsToNodesToBeAdded, Map.class);
 		assertTrue("Adding of new mapping failed", response.getStatusCode().is2xxSuccessful());
 		
-		bucketsToNodes = response.getBody();
+		bucketsToNodesReceived = response.getBody();
 	}
 
 	
@@ -87,7 +83,7 @@ public class BucketsToNodesServiceStepsDef {
 
 	@Then("^the Buckets To Nodes mapping is returned as JSON$")
 	public void the_Buckets_To_Nodes_mapping_is_returned_as_JSON() throws Throwable {
-		assertEquals("The number of Buckets from the map is invalid", nodeProperties.getNoOfBuckets(), bucketsToNodes.size());
+		assertEquals("The number of Buckets from the map is invalid", nodeProperties.getNoOfBuckets(), bucketsToNodesReceived.size());
 	}
 
 	@When("^I call the REST API DELETE \"([^\"]*)\"$")
@@ -111,10 +107,11 @@ public class BucketsToNodesServiceStepsDef {
 
 	@Then("^the new Buckets To Nodes mapping is stored on disk for recovery$")
 	public void the_new_Buckets_To_Nodes_mapping_is_stored_on_disk_for_recovery() throws Throwable {
-	    // Write code here that turns the phrase above into concrete actions
-//	    throw new PendingException();
+	    Integer noOfBucketsMappings = (int) Files.list(Paths.get("target", "bucketsToNodes2")).count();
+	    
+	    assertEquals("Buckets TO Nodes mapping is not stored on disk", Integer.valueOf(nodeProperties.getNoOfBuckets()), noOfBucketsMappings);
 	}
-	
+
 	private Set<NodeAddress> dummyNodeAddresses(int bucket) {
 		return ThreadLocalRandom.current().ints(5, 0, 255)
 			.mapToObj(this::dummyNodeAddresse)

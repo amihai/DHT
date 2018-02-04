@@ -41,7 +41,7 @@ public class KeyValueStoreService {
 		Optional<KeyValue> keyValue = keyValueStorage.load(key);
 		return keyValue
 				.map(ResponseEntity::ok)
-				.orElseGet(() -> ResponseEntity.unprocessableEntity().body(null));
+				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 	
 	@RequestMapping(method={RequestMethod.GET},value={"/keyValue/size"}, produces = MediaType.APPLICATION_JSON_VALUE)

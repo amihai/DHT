@@ -71,7 +71,7 @@ public class KeyValueDAOFileSystem implements KeyValueDao {
 			Path keyFilePath = Paths.get(bucketFilePath.toString(), key);
 			if (keyFilePath.toFile().exists()) {
 				try {
-					String value = new String(Files.readAllBytes(keyFilePath));
+					String value = new String(Files.readAllBytes(keyFilePath)).trim();
 					return Optional.of(new KeyValue(key, value));
 				} catch (IOException e) {
 					logger.error("Cannot read value from disk:", e);

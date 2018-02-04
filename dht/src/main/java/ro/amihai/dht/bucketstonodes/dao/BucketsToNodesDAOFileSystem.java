@@ -4,7 +4,7 @@ import static java.lang.String.format;
 import static java.nio.file.Files.createDirectories;
 import static java.nio.file.Files.list;
 import static java.util.Optional.ofNullable;
-import static java.util.stream.Collectors.toMap;
+import static java.util.stream.Collectors.toConcurrentMap;
 
 import java.io.IOException;
 import java.nio.file.Path;
@@ -65,7 +65,9 @@ public class BucketsToNodesDAOFileSystem implements BucketsToNodesDAO {
 			Map<Integer, Set<NodeAddress>> bucketsToNodes = 
 					list(storeDirectory)
 						.collect( 
-								toMap(this::bucketFromFileName, bucketsToNodesJsonParser::readNodeAddressesFromFile)
+								toConcurrentMap(
+										this::bucketFromFileName, 
+										bucketsToNodesJsonParser::readNodeAddressesFromFile)
 								);
 			return ofNullable(bucketsToNodes.isEmpty() ? null : bucketsToNodes);
 		} catch (IOException e) {

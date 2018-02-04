@@ -32,14 +32,14 @@ public class BucketsToNodesJsonParser {
 	
 	public Map<Integer, Set<NodeAddress>> fromJson(Map<String, List<Map<String, String>>> jsonMap) {
 		return jsonMap.entrySet().stream()
-			.collect(Collectors.toMap(
+			.collect(Collectors.toConcurrentMap(
 					entry -> Integer.valueOf(entry.getKey()), 
 					entry-> mapToListToSetNodeAddress(entry.getValue())));
 	}
 	
 	public Map<Integer, BucketSize> fromBuckesSizeJson(Map<String, Map<String, Object>> jsonMap) {
 		return jsonMap.entrySet().stream()
-			.collect(Collectors.toMap(
+			.collect(Collectors.toConcurrentMap(
 					entry -> Integer.valueOf(entry.getKey()), 
 					entry-> maptToBucketSize(entry.getValue())));
 	}

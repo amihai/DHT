@@ -58,9 +58,11 @@ public class BucketsSizeCache {
 	
 	@Scheduled(fixedRateString="${bucketsSizeCache.refresh.rate}")
 	private void updateBucketsSizeCache() {
+		logger.info("Start to update the size of the buckets");
 		updateBucketSizeFromCurrentNode();
 		
 		updateBucketSizeFromNetwork();
+		logger.info("Done updating the size of the buckets");
 	}
 
 	public Map<Integer, BucketSize> getBucketsSize() {
