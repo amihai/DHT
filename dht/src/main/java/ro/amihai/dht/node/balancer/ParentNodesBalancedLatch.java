@@ -42,7 +42,7 @@ public class ParentNodesBalancedLatch {
 			logger.info("No parent to check if balanced");
 			parentNodesToBeBalanced = new CountDownLatch(0);
 		} else {
-			logger.info("Found {} parent nodes. Woit for at least one to be balanced", parentNodes.length);
+			logger.info("Found {} parent nodes. Wait for at least one to be balanced", parentNodes.length);
 			parentNodesToBeBalanced = new CountDownLatch(1); //At least on node to be balanced
 			scheduleParentNodesChecking(parentNodes);
 		}

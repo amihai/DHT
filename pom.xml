@@ -19,6 +19,7 @@
 	
 	<modules>
 		<module>dht</module>
+		<module>assembly</module>
 	</modules>
 
 	<properties>
