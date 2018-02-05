@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+
+	<groupId>ro.amihai</groupId>
+	<artifactId>dht-docs</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<packaging>pom</packaging>
+
+	<name>Distributed Hash Table - Documentation</name>
+
+	<parent>
+		<groupId>ro.amihai</groupId>
+		<artifactId>dht-parent</artifactId>
+		<version>0.0.1-SNAPSHOT</version>
+	</parent>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>1.5.6</version>
+				<executions>
+					<execution>
+						<id>render-asciidoc</id>
+						<phase>generate-resources</phase>
+						<goals>
+							<goal>process-asciidoc</goal>
+						</goals>
+					</execution>
+				</executions>
+
+				<configuration>
+					<sourceDirectory>asciidoctor</sourceDirectory>
+					<outputDirectory>target/html5/en-US</outputDirectory>
+					<backend>html5</backend>
+					<attributes>
+						<project-version>${project.version}</project-version>
+						<project-name>${project.name}</project-name>
+					</attributes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+</project>

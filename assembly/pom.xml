@@ -8,7 +8,7 @@
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>pom</packaging>
 
-	<name>Distributed Hash Table</name>
+	<name>Distributed Hash Table Assembly</name>
 
 	<parent>
 		<groupId>ro.amihai</groupId>
