@@ -73,7 +73,7 @@ The rest of the endpoints are use internally by the Nodes for Synchronization.<b
 
 ### Data Model
 
-### Health Check and Monitoring
+![alt text](https://github.com/amihai/DHT/blob/master/docs/images/Data_Model.png "Data Model")
 
 ## Build / Run instructions
 
