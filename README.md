@@ -77,8 +77,6 @@ The rest of the endpoints are use internally by the Nodes for Synchronization.<b
 
 ## Build / Run instructions
 
-Project 
-
 ### Build The Project
 
 ```bash
@@ -93,6 +91,56 @@ assembly\target\dht-assembly-0.0.1-SNAPSHOT-DHT-Assembly.zip
 
 ### Start The Storage in a Cluster of nodes
 
+To start the Storage you will need to unzip the artefact ---assembly\target\dht-assembly-0.0.1-SNAPSHOT-DHT-Assembly.zip--- <br />
+
+You can start directly a Cluster of three nodes as sample using: <br />
+```bash
+start_cluster_of_3_nodes.bat
+```
+
+The Nodes started by this script can be accessed on URLS:
+* http://localhost:8001/swagger-ui.html
+* http://localhost:8002/swagger-ui.html
+* http://localhost:8003/swagger-ui.html
+
+You can check that all the Nodes started properly if you use the Health Service. You should see that all the nodes are BALANCED and store a similar number of nodes. <br />
+
+![alt text](https://github.com/amihai/DHT/blob/master/docs/images/HealthCheck.png "Health Check")
+
+You can start to use now the "key-value-store-service : Key Value Store Service"  from the buttom that expose the Storage API. <br />
+
+### Check Logs
+
+Each node is storing the logs into ---logs/node_PORT.out---. For example we have after the started the above cluster:
+```bash
+logs/node_8001.out
+logs/node_8002.out
+logs/node_8003.out
+```
+
+### Start The Nodes One by One
+
+You can start a single Node running the command:
+```bash
+java -jar dht-0.0.1-SNAPSHOT.jar --server.port=8004 --bucketsToNodes.storeDirectory=target/node4/bucketsToNodes --keyValue.storeDirectory=target/node4/keyValue --node.initializeFromNodes=localhost:8003
+```
+In the above command:
+* server.port is the port of the current Node
+* bucketsToNodes.storeDirectory is the location where we will store the bucketsToNodes mapping. Need to be unique if you start multiple nodes on the same machine.
+* keyValue.storeDirectory similar with bucketsToNodes.storeDirectory but for key value pairs
+* node.initializeFromNodes is a list with master nodes that are already started. The current node will import the bucketsToNodes mapping from a master node.
+
+
 ### Configure The Storage
+
+You can configure the Node by modifying the ---application.properties--- file from the zip or by overriding properties when you start the node (like example above). <br />
+
+Except the properties already describe you may need to modify:
+* logging.file to modify the location where log4j is storing the logs
+* node.noOfBuckets - This should be the same for all the Nodes so cannot be modified after you started the first Node.
+* bucketsToNodes.balancing.replicationFactor - The number of copies of the same Bucket into the network.
+
+If you want to fresh start the application you should remove the storage directories. In the default config they are located into the ---target--- directory.
+ 
 	
 	
