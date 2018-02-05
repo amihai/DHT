@@ -15,7 +15,7 @@ The storage on each Bucket and the Buckets to Nodes Mapping mapping is periodica
 
 So, if we consider a Cluster of 4 Nodes, a Buckets size of 4 and a replication factor of 2 we can have a network like:
 
-![alt text](https://github.com/amihai/DHT/blob/master/docs/asciidoctor/images/Cluster.png "Cluster")
+![alt text](https://github.com/amihai/DHT/blob/master/docs/images/Cluster.png "Cluster")
 
 ### Buckets balancing
 
