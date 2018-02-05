@@ -1,13 +1,11 @@
 package ro.amihai.dht.bucketstonodes;
 
-import static java.util.Arrays.asList;
-import static java.util.Collections.unmodifiableMap;
 import static java.util.function.Function.identity;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
@@ -87,18 +85,17 @@ public class BucketsToNodes {
 	}
 	
 	public Map<Integer, Set<NodeAddress>> getBucketsToNodes() {
-		if (null != bucketsToNodes) {
-			return unmodifiableMap(bucketsToNodes);
-		} else {
-			return Collections.emptyMap();
-		}
-		
+		return Optional.ofNullable(bucketsToNodes)
+				.map(Collections::unmodifiableMap)
+				.orElseGet(Collections::emptyMap);
 	}
 	
 	private Map<Integer, Set<NodeAddress>> initialize() {
 		 return IntStream.range(0, nodeProperties.getNoOfBuckets())
 			.boxed()
-			.collect(Collectors.toConcurrentMap(identity(), i -> new HashSet<>(asList(nodeProperties.getCurrentNodeAddress()))));
+			.collect(Collectors.toConcurrentMap(
+					identity(), 
+					i -> Stream.of(nodeProperties.getCurrentNodeAddress()).collect(Collectors.toSet())));
 	}
 	
 }
