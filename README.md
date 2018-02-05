@@ -19,14 +19,14 @@ So, if we consider a Cluster of 4 Nodes, a Buckets size of 4 and a replication f
 
 <br />
 
-### Buckets balancing
+### Buckets Balancing
 Each Node is running a balancing session on startup and at a fixed rate, configurable in the application.properties <br />
 The Balancing consists of next actions: <br />
 * Copying the Buckets that are not replicated at least with the replication factor.
 * Transferring Buckets from Nodes that are busy.
 <br />
-To know if a Node is busy, the Node Balancing process is calculating the number of Buckets that need to be stored on each Node:
-* Number Of Buckets Per Node = (Total Number of Buckets) * (Replication Factor) / (Number Of Nodes) 
+To know if a Node is busy, the Node Balancing process is calculating the number of Buckets that need to be stored on each Node:<br />
+<p style="text-align: center;">Number Of Buckets Per Node = (Total Number of Buckets) * (Replication Factor) / (Number Of Nodes)</p> 
 
 ### Node Synchronization
 
