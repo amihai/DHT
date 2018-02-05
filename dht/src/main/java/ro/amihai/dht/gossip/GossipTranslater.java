@@ -10,6 +10,9 @@ import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
 import ro.amihai.dht.keyvaluestore.KeyValue;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDAOFileSystem;
 
+/**
+ * Apply a Gossip on the Current Node 
+ */
 @Component
 public class GossipTranslater {
 

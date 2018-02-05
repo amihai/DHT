@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.ApiOperation;
+
 @RestController
 public class GossipService {
 
@@ -25,6 +27,7 @@ public class GossipService {
 	@Autowired
 	private GossipTranslater gossipTranslater;
 	
+	@ApiOperation("Register a new Gossip and apply it to current Node")
 	@RequestMapping(method={RequestMethod.PUT},value={"/gossip"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Gossip> put(@Valid @RequestBody Gossip gossip) {

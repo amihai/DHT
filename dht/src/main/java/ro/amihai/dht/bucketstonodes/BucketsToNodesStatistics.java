@@ -63,7 +63,8 @@ public class BucketsToNodesStatistics {
 		
 		allNodes = new HashSet<>();
 		allNodes.add(nodeProperties.getCurrentNodeAddress());
-		allNodes.addAll(bucketsToNodes.getBucketsToNodes().values().stream().flatMap(set -> set.stream()).collect(toSet()));
+		allNodes.addAll(bucketsToNodes.getBucketsToNodes().values()
+				.stream().flatMap(set -> set.stream()).collect(toSet()));
 		
 		bucketsInCurrentNode = bucketsToNodes.getBucketsToNodes().entrySet()
 				.stream().filter(entry -> entry.getValue().contains(nodeProperties.getCurrentNodeAddress()))

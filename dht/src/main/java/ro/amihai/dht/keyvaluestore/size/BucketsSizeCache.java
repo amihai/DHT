@@ -72,7 +72,8 @@ public class BucketsSizeCache {
 	private void updateBucketSizeFromCurrentNode() {
 		logger.debug("Start to update the size of the buckets from the current node");
 		Map<Integer, BucketSize> bucketsSizeFromFS = bucketsToNodesStatistics.getBucketsInCurrentNode()
-			.stream().map(this::getBucketSizeFromFileSystem)
+			.stream()
+			.map(this::getBucketSizeFromFileSystem)
 			.flatMap(optional -> optional.map(Stream::of).orElseGet(Stream::empty))
 			.collect(Collectors.toMap(bucketSize -> bucketSize.getBucket(), identity()));
 		

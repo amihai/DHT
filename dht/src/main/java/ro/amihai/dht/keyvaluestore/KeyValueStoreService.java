@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import io.swagger.annotations.ApiOperation;
 import ro.amihai.dht.keyvaluestore.size.BucketsSizeCache;
 
 @RestController()
@@ -25,6 +26,7 @@ public class KeyValueStoreService {
 	@Autowired
 	private BucketsSizeCache bucketsSizeCache;
 	
+	@ApiOperation("Add a new Key Value to the Storage")
 	@RequestMapping(method={RequestMethod.PUT},value={"/keyValue"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<KeyValue> put(@Valid @RequestBody KeyValue keyValue) {
@@ -35,6 +37,7 @@ public class KeyValueStoreService {
 		}
 	}
 	
+	@ApiOperation("Add a Key Value Pair from the Storage")
 	@RequestMapping(method={RequestMethod.GET},value={"/keyValue/{key}"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<KeyValue> get(@PathVariable("key") String key) {
@@ -44,6 +47,7 @@ public class KeyValueStoreService {
 				.orElseGet(() -> ResponseEntity.notFound().build());
 	}
 	
+	@ApiOperation("Return the number of uniques Pairs in the Storage")
 	@RequestMapping(method={RequestMethod.GET},value={"/keyValue/size"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<Long> getSize() {
@@ -52,6 +56,7 @@ public class KeyValueStoreService {
 				.sum());
 	}
 	
+	@ApiOperation("Delete a Pair from Storage")
 	@RequestMapping(method={RequestMethod.DELETE},value={"/keyValue/{key}"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public ResponseEntity<KeyValue> delete(@PathVariable("key") String key) {

@@ -44,10 +44,10 @@ public class GossipRegistry {
 	
 	public boolean registerGossip(Gossip gossip) {
 		if (gossipsDone.contains(gossip)) {
-			logger.info("Gossip already done: {}" , gossip);
+			logger.debug("Gossip already done: {}" , gossip);
 			return false;
 		} else {
-			logger.info("Gossip registered: {}" , gossip);
+			logger.debug("Gossip registered: {}" , gossip);
 			gossipToDo.add(gossip);
 			return true;
 		}
