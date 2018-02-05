@@ -27,10 +27,22 @@ The Balancing consists of next actions: <br />
 <br />
 To know if a Node is busy, the Node Balancing process is calculating the number of Buckets that need to be stored on each Node:<br />
 <p style="text-align: center;">Number Of Buckets Per Node = (Total Number of Buckets) * (Replication Factor) / (Number Of Nodes)</p> 
+The Bucket Balancing session is using the Buckets To Nodes mapping stored on the current node. <br /> 
 
 ### Node Synchronization
+The Node Synchronization consists in:
+* Propagating any ADD/REMOVE of a Key Value Pair into the whole network.
+* Updating the Buckets To Nodes Mapping on all the nodes after a modification.
+The Node Sync Process is done using Gossip strategy. <br />   
+The Gossip Scheduler is configurable in the application.properties </br>
+On each execution, the Gossip Scheduler select a Random list of Gossip Members from the network. </br>
+The Gossip Scheduler keep a history with last 1000 gossip already sent in order to avoid infinite loops of gossips. <br />
+Any modification on the Buckets from the current Node or on the Buckets To Nodes mapping is converted into a Gossip and send to the network </br> 
+This strategy allow us to propagate modifications into the network very efficient. We gossip with only half of the nodes and is working event if some of them are down. <br />  
 
 ### Node Architecture
+
+### Node Size
 
 ### 3rd party dependencies
 
