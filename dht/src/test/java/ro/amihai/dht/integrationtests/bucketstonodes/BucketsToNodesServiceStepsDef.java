@@ -1,6 +1,5 @@
 package ro.amihai.dht.integrationtests.bucketstonodes;
 
-import static java.lang.String.valueOf;
 import static java.util.function.Function.identity;
 import static java.util.stream.Collectors.toMap;
 import static org.junit.Assert.assertEquals;
@@ -24,6 +23,7 @@ import org.springframework.web.client.RestTemplate;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
+import ro.amihai.dht.bucketstonodes.BucketsToNodes;
 import ro.amihai.dht.bucketstonodes.BucketsToNodesService;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
@@ -39,6 +39,9 @@ public class BucketsToNodesServiceStepsDef extends SpringIntegrationStepDef {
 	
 	@Autowired
 	private BucketsToNodesService bucketsToNodesService;
+	
+	@Autowired
+	private BucketsToNodes bucketsToNodes;
 	
 	private Map<Integer, Set<NodeAddress>> bucketsToNodesReceived;
 	private Map<Integer, Set<NodeAddress>> bucketsToNodesToBeAdded;
@@ -85,18 +88,14 @@ public class BucketsToNodesServiceStepsDef extends SpringIntegrationStepDef {
 	public void the_Buckets_To_Nodes_mapping_is_returned_as_JSON() throws Throwable {
 		assertEquals("The number of Buckets from the map is invalid", nodeProperties.getNoOfBuckets(), bucketsToNodesReceived.size());
 	}
+	
+	@Given("^the Mapping To Nodes contains in bucket \"([^\"]*)\" Node with host \"([^\"]*)\" and port \"([^\"]*)\"$")
+	public void the_Mapping_To_Nodes_contains_in_bucket_Node_with_host_and_port(String bucket, String host, String port) throws Throwable {
+		bucketsToNodes.add(Integer.valueOf(bucket) , new NodeAddress(host, Integer.parseInt(port)));
+	}
 
 	@When("^I call the REST API DELETE \"([^\"]*)\"$")
 	public void i_call_the_REST_API_DELETE(String removeMappingPath) throws Throwable {
-		Integer keyToBeRemovedFrom = new Integer(1);
-		nodeAddressToBeRemoved = dummyNodeAddresse(1);
-		
-		bucketsToNodesService.getBucketsToNodes().get(keyToBeRemovedFrom).add(nodeAddressToBeRemoved);
-		
-		removeMappingPath = removeMappingPath.replaceFirst("\\{bucket\\}", keyToBeRemovedFrom.toString());
-		removeMappingPath = removeMappingPath.replaceFirst("\\{node_host\\}", nodeAddressToBeRemoved.getHost());
-		removeMappingPath = removeMappingPath.replaceFirst("\\{node_port\\}", valueOf(nodeAddressToBeRemoved.getPort()));
-		
 		restTemplate.delete((nodeProperties.getCurrentNodeAddress().getURI(removeMappingPath, null)));
 	}
 

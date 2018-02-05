@@ -15,6 +15,7 @@ Feature:
         
     Scenario: Node expose a REST API that remove mappings from the Buckets To Nodes mapping 
         Given that a Node is started
-        When I call the REST API DELETE "/bucketsToNodes/{bucket}/{node_host}/{node_port}" 
+        And the Mapping To Nodes contains in bucket "1" Node with host "localhost" and port "8082"
+        When I call the REST API DELETE "/bucketsToNodes/1/localhost/8082" 
         Then the mapping is removed from the Buckets To Nodes
         And the new Buckets To Nodes mapping is stored on disk for recovery    
