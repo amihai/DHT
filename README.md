@@ -91,7 +91,7 @@ assembly\target\dht-assembly-0.0.1-SNAPSHOT-DHT-Assembly.zip
 
 ### Start The Storage in a Cluster of nodes
 
-To start the Storage you will need to unzip the artefact ---assembly\target\dht-assembly-0.0.1-SNAPSHOT-DHT-Assembly.zip--- <br />
+To start the Storage you will need to unzip the artefact `assembly\target\dht-assembly-0.0.1-SNAPSHOT-DHT-Assembly.zip` <br />
 
 You can start directly a Cluster of three nodes as sample using: <br />
 ```bash
@@ -111,7 +111,7 @@ You can start to use now the "key-value-store-service : Key Value Store Service"
 
 ### Check Logs
 
-Each node is storing the logs into ---logs/node_PORT.out---. For example we have after the started the above cluster:
+Each node is storing the logs into `logs/node_PORT.out`. For example we have after the started the above cluster:
 ```bash
 logs/node_8001.out
 logs/node_8002.out
@@ -133,14 +133,14 @@ In the above command:
 
 ### Configure The Storage
 
-You can configure the Node by modifying the ---application.properties--- file from the zip or by overriding properties when you start the node (like example above). <br />
+You can configure the Node by modifying the `application.properties` file from the zip or by overriding properties when you start the node (like example above). <br />
 
 Except the properties already describe you may need to modify:
 * logging.file to modify the location where log4j is storing the logs
 * node.noOfBuckets - This should be the same for all the Nodes so cannot be modified after you started the first Node.
 * bucketsToNodes.balancing.replicationFactor - The number of copies of the same Bucket into the network.
 
-If you want to fresh start the application you should remove the storage directories. In the default config they are located into the ---target--- directory.
+If you want to fresh start the application you should remove the storage directories. In the default config they are located into the `target` directory.
  
 	
 	
