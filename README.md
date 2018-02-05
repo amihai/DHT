@@ -35,7 +35,7 @@ The Node Synchronization consists in:
 * Updating the Buckets To Nodes Mapping on all the nodes after a modification.
 The Node Sync Process is done using Gossip strategy. <br />   
 The Gossip Scheduler is configurable in the application.properties </br>
-On each execution, the Gossip Scheduler select a Random list of Gossip Members from the network. </br>
+On each execution, the Gossip Scheduler select a Random list of Gossip Members from the network.  <br />
 The Gossip Scheduler keep a history with last 1000 gossip already sent in order to avoid infinite loops of gossips. <br />
 Any modification on the Buckets from the current Node or on the Buckets To Nodes mapping is converted into a Gossip and send to the network </br> 
 
@@ -77,7 +77,19 @@ The rest of the endpoints are use internally by the Nodes for Synchronization.<b
 
 ## Build / Run instructions
 
+Project 
+
 ### Build The Project
+
+```bash
+mvn clean install
+```
+
+Assembly plugin will create the ZIP artefact that contains the fat jar, the config files and a bat to start a cluster of three nodes: <br /> 
+
+```bash
+assembly\target\dht-assembly-0.0.1-SNAPSHOT-DHT-Assembly.zip
+```
 
 ### Start The Storage in a Cluster of nodes
 
