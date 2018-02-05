@@ -31,16 +31,20 @@ The Bucket Balancing session is using the Buckets To Nodes mapping stored on the
 
 ### Node Synchronization
 The Node Synchronization consists in:
-* Propagating any ADD/REMOVE of a Key Value Pair into the whole network.
+* Propagating any PUT/DELETE of a Key Value Pair into the whole network.
 * Updating the Buckets To Nodes Mapping on all the nodes after a modification.
 The Node Sync Process is done using Gossip strategy. <br />   
 The Gossip Scheduler is configurable in the application.properties </br>
 On each execution, the Gossip Scheduler select a Random list of Gossip Members from the network. </br>
 The Gossip Scheduler keep a history with last 1000 gossip already sent in order to avoid infinite loops of gossips. <br />
 Any modification on the Buckets from the current Node or on the Buckets To Nodes mapping is converted into a Gossip and send to the network </br> 
-This strategy allow us to propagate modifications into the network very efficient. We gossip with only half of the nodes and is working event if some of them are down. <br />  
 
 ### Node Architecture
+
+The current Node is forwarding any PUT/DELETE/GET of a Key that is not stored to a current Bucket.  </br>
+The Remote Node that is owner on the Bucket is selected from the Buckets To Nodes mapping. </br>
+
+![alt text](https://github.com/amihai/DHT/blob/master/docs/images/Put_Key_Value.png "Put Key Value Sequence Diagram") 
 
 ### Node Size
 
