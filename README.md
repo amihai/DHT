@@ -41,16 +41,35 @@ Any modification on the Buckets from the current Node or on the Buckets To Nodes
 
 ### Node Architecture
 
-The current Node is forwarding any PUT/DELETE/GET of a Key that is not stored to a current Bucket.  </br>
-The Remote Node that is owner on the Bucket is selected from the Buckets To Nodes mapping. </br>
+The current Node is forwarding any PUT/DELETE/GET of a Key that is not part of Bucket owned.  </br>
+The Remote Node that is owner of the Bucket is selected from the Buckets To Nodes mapping. </br>
+If the value is stored on local Bucket we register a Gossip and asynchronously the Gossip Scheduler will send it to the network. <br /> 
 
 ![alt text](https://github.com/amihai/DHT/blob/master/docs/images/Put_Key_Value.png "Put Key Value Sequence Diagram") 
 
 ### Node Size
+Each Node store in-memory the size of each Bucket. </br>
+The size of each bucket is updated by a BucketsSizeCache Scheduler (configurable in application.properties). <br />
+The update of the buckets size is done in two ways:
+* For the Buckets stored on local disk we just some the keys stored.
+* For the Buckets stored remote we compute a Gossip Members list and we check the size of each bucket remote. If the value returned by the remote node is old we keep the value that we already have. 
 
 ### 3rd party dependencies
+* Cucumber for BDD. 
+* Swagger 2
+* Spring Core for IoC.
+* Spring REST.
+* Spring Boot.
+* Maven Assembly Plugin.
+* SLF4J
 
 ### RESTful API
+The Node expose a REST API that can be accessed on http://localhost:8001/swagger-ui.html (replace 8001 with node port)<br />
+The REST API that implement the Key Value CRUD operations is the last one (key-value-store-service : Key Value Store Service).<br />
+The rest of the endpoints are use internally by the Nodes for Synchronization.<br />
+  
+![alt text](https://github.com/amihai/DHT/blob/master/docs/images/Swagger.png "Swagger")
+
 
 ### Data Model
 
