@@ -142,5 +142,26 @@ Except the properties already describe you may need to modify:
 
 If you want to fresh start the application you should remove the storage directories. In the default config they are located into the `target` directory.
  
-	
+### Tuning
+
+#### Capacity
+Each Node has a limited storing capacity (FileSystem). In order to increase the capacity per Node you can:
+* Start more nodes - but this will lower the Consistency. 
+* Lower the replication factor - but this will lower the Fault Tolerance.  
+
+#### Performance
+To increase the Performance you can:
+* Store on the local Node more Buckets - this will lower the Capacity
+* Lower the Gossip rate - this will lower the Consistency.
+* Lower the replication factor - but this will lower the Fault Tolerance. 
+
+#### Consistency
+To increase the Consistency you can:  
+* Run Gossip more often - this will lower the Performance
+* Lower the number of Nodes - this will decrease the Capacity  
+
+#### Fault Tolerance
+To improve the Fault Tolerance you can:
+* Increase the replication factor - this will lower the Performance and the Capacity
+* Increase the number of Nodes - this will lower the Performance and Consistency	
 	
