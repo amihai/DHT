@@ -6,7 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodes;
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.BucketsInCurrentNode;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDAOFileSystem;
 import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
@@ -20,7 +20,7 @@ public class GossipTranslater {
 	private BucketsToNodes bucketsToNodes;
 	
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
+	private BucketsInCurrentNode bucketsInCurrentNode;
 	
 	@Autowired
 	private KeyValueDAOFileSystem keyValueDAOFileSystem;
@@ -34,7 +34,7 @@ public class GossipTranslater {
 			}
 		}
 		KeyValue keyValue = gossip.getKeyValue();
-		if (null != keyValue && bucketsToNodesStatistics.isBucketOnCurrentNode(keyValue.getKey())) {
+		if (null != keyValue && bucketsInCurrentNode.isBucketOnCurrentNode(keyValue.getKey())) {
 			if (ADD == gossip.getAction()) {
 				keyValueDAOFileSystem.saveOrUpdate(keyValue);
 			} else {

@@ -18,7 +18,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.BucketsInCurrentNode;
 import ro.amihai.dht.gossip.GossipRegistry;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDAOFileSystem;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDaoNetwork;
@@ -29,7 +29,7 @@ public class KeyValueStorage {
 	private Logger logger = LoggerFactory.getLogger(KeyValueStorage.class);
 	
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
+	private BucketsInCurrentNode bucketsInCurrentNode;
 	
 	@Autowired
 	private KeyValueDAOFileSystem keyValueDAOFileSystem;
@@ -44,7 +44,7 @@ public class KeyValueStorage {
 	private GossipRegistry gossipRegistry;
 	
 	public boolean store(KeyValue keyValue) {
-		if (bucketsToNodesStatistics.isBucketOnCurrentNode(keyValue.getKey())) {
+		if (bucketsInCurrentNode.isBucketOnCurrentNode(keyValue.getKey())) {
 			logger.debug("Store key {} on current node", keyValue.getKey());
 			gossipRegistry.gossipKeyValueAdded(keyValue);
 			return keyValueDAOFileSystem.saveOrUpdate(keyValue);
@@ -55,7 +55,7 @@ public class KeyValueStorage {
 	}
 	
 	public Optional<KeyValue> load(String key) {
-		if (bucketsToNodesStatistics.isBucketOnCurrentNode(key)) {
+		if (bucketsInCurrentNode.isBucketOnCurrentNode(key)) {
 			logger.debug("Load key {} from the current node", key);
 			return keyValueDAOFileSystem.load(key);
 		} else {
@@ -65,7 +65,7 @@ public class KeyValueStorage {
 	}
 	
 	public Optional<KeyValue> delete(String key) {
-		if (bucketsToNodesStatistics.isBucketOnCurrentNode(key)) {
+		if (bucketsInCurrentNode.isBucketOnCurrentNode(key)) {
 			logger.debug("Delete key {} from the current node", key);
 			gossipRegistry.gossipKeyRemoved(key);
 			return keyValueDAOFileSystem.delete(key);
@@ -77,7 +77,7 @@ public class KeyValueStorage {
 	
 	public Optional<List<KeyValue>> loadBucket(int bucket) {
 		Optional<List<KeyValue>> fullBucket = Optional.empty();
-		if(bucketsToNodesStatistics.isBucketOnCurrentNode(bucket)) {
+		if(bucketsInCurrentNode.isBucketOnCurrentNode(bucket)) {
 			Path bucketFilePath = Paths.get(storeDirectory.toString(), valueOf(bucket));
 			fullBucket = Optional.of(emptyList());
 			if (bucketFilePath.toFile().exists()) {

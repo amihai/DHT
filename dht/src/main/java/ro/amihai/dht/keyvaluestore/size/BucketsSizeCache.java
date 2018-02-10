@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodesJsonParser;
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.BucketsInCurrentNode;
 import ro.amihai.dht.gossip.GossipMemebers;
 import ro.amihai.dht.node.NodeAddress;
 
@@ -39,7 +39,7 @@ public class BucketsSizeCache {
 	private Map<Integer, BucketSize> bucketsSize = new HashMap<>();
 	
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
+	private BucketsInCurrentNode bucketsInCurrentNode;
 	
 	@Value("${keyValue.storeDirectory}")
 	private Path storeDirectory;
@@ -71,7 +71,7 @@ public class BucketsSizeCache {
 	
 	private void updateBucketSizeFromCurrentNode() {
 		logger.debug("Start to update the size of the buckets from the current node");
-		Map<Integer, BucketSize> bucketsSizeFromFS = bucketsToNodesStatistics.getBucketsInCurrentNode()
+		Map<Integer, BucketSize> bucketsSizeFromFS = bucketsInCurrentNode.getBucketsInCurrentNode()
 			.stream()
 			.map(this::getBucketSizeFromFileSystem)
 			.flatMap(optional -> optional.map(Stream::of).orElseGet(Stream::empty))

@@ -14,7 +14,7 @@ import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import ro.amihai.dht.bucketstonodes.BucketsToNodes;
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.AllNodes;
 import ro.amihai.dht.integrationtests.SpringIntegrationStepDef;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
@@ -30,7 +30,7 @@ public class RemoveUnreachableNodesStepsDef extends SpringIntegrationStepDef {
 	private BucketsToNodes bucketsToNodes;	
 	
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;	
+	private AllNodes allNodes;	
 	
 	@Autowired
 	private BucketsBalancer bucketsBalancer;
@@ -60,7 +60,7 @@ public class RemoveUnreachableNodesStepsDef extends SpringIntegrationStepDef {
 
 	@Then("^the Node with host \"([^\"]*)\" and port \"([^\"]*)\" is removed from the Buckets To Nodes Mapping$")
 	public void the_Node_with_host_and_port_is_removed_from_the_Buckets_To_Nodes_Mapping(String host, int port) throws Throwable {
-		Assert.assertFalse("The Unreachable Node was not removed",  bucketsToNodesStatistics.getAllNodes().contains(new NodeAddress(host, port)));
+		Assert.assertFalse("The Unreachable Node was not removed",  allNodes.getAllNodes().contains(new NodeAddress(host, port)));
 	}
 
 }

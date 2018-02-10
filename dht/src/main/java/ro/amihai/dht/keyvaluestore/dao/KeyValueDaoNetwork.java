@@ -11,7 +11,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.BucketsInCurrentNode;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
@@ -21,7 +21,7 @@ public class KeyValueDaoNetwork implements KeyValueDao {
 	private Logger logger = LoggerFactory.getLogger(KeyValueDaoNetwork.class);
 	
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
+	private BucketsInCurrentNode bucketsInCurrentNode;
 	
 	@Autowired
 	private RestTemplate restTemplate;
@@ -29,7 +29,7 @@ public class KeyValueDaoNetwork implements KeyValueDao {
 	@Override
 	public boolean saveOrUpdate(KeyValue keyValue) {
 		logger.debug("Save keyValue {} on the network", keyValue);
-		Optional<NodeAddress> externalNodeAddressForKey = bucketsToNodesStatistics.externalNodeAddressForKey(keyValue.getKey());
+		Optional<NodeAddress> externalNodeAddressForKey = bucketsInCurrentNode.externalNodeAddressForKey(keyValue.getKey());
 		if (externalNodeAddressForKey.isPresent()) {
 			NodeAddress nodeAddress = externalNodeAddressForKey.get();
 			logger.debug("Save keyValue {} on the node {}", keyValue, nodeAddress);
@@ -49,7 +49,7 @@ public class KeyValueDaoNetwork implements KeyValueDao {
 	@Override
 	public Optional<KeyValue> load(String key) {
 		logger.debug("Load the Key {} from the network", key);
-		Optional<NodeAddress> externalNodeAddressForKey = bucketsToNodesStatistics.externalNodeAddressForKey(key);
+		Optional<NodeAddress> externalNodeAddressForKey = bucketsInCurrentNode.externalNodeAddressForKey(key);
 		if (externalNodeAddressForKey.isPresent()) {
 			NodeAddress nodeAddress = externalNodeAddressForKey.get();
 			logger.debug("Load the key {} from the node {}", key, nodeAddress);
@@ -75,7 +75,7 @@ public class KeyValueDaoNetwork implements KeyValueDao {
 	@Override
 	public Optional<KeyValue> delete(String key) {
 		logger.debug("Delete the Key {} from the network", key);
-		Optional<NodeAddress> externalNodeAddressForKey = bucketsToNodesStatistics.externalNodeAddressForKey(key);
+		Optional<NodeAddress> externalNodeAddressForKey = bucketsInCurrentNode.externalNodeAddressForKey(key);
 		if (externalNodeAddressForKey.isPresent()) {
 			NodeAddress nodeAddress = externalNodeAddressForKey.get();
 			logger.debug("Delete the key {} from the node {}", key, nodeAddress);

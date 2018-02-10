@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.AllNodes;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 
@@ -21,7 +21,7 @@ public class GossipMemebers {
 	private Logger logger = LoggerFactory.getLogger(GossipMemebers.class);
 	
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
+	private AllNodes allNodes;
 	
 	@Autowired
 	private NodeProperties nodeProperties;
@@ -31,11 +31,11 @@ public class GossipMemebers {
 	 */
 	public Set<NodeAddress> shuffledGossipMembers() {
 		//More than half of the nodes
-		int gossipMembersSize = (bucketsToNodesStatistics.getAllNodes().size() / 2) + 1;
+		int gossipMembersSize = (allNodes.getAllNodes().size() / 2) + 1;
 		
 		logger.trace("GossipMembersSize is {}", gossipMembersSize);
 		
-		List<NodeAddress> allNodeExceptCurrent = bucketsToNodesStatistics.getAllNodes().stream()
+		List<NodeAddress> allNodeExceptCurrent = allNodes.getAllNodes().stream()
 			.filter(node -> ! node.equals(nodeProperties.getCurrentNodeAddress()))
 			.collect(Collectors.toList());
 		

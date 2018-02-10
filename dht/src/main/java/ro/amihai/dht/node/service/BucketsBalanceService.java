@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.BucketsInCurrentNode;
 import ro.amihai.dht.service.keyvaluestore.KeyValue;
 import ro.amihai.dht.service.keyvaluestore.KeyValueStorage;
 
@@ -26,7 +26,7 @@ import ro.amihai.dht.service.keyvaluestore.KeyValueStorage;
 public class BucketsBalanceService {
 
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
+	private BucketsInCurrentNode bucketsInCurrentNode;
 	
 	@Autowired
 	private KeyValueStorage keyValueStorage;
@@ -35,7 +35,7 @@ public class BucketsBalanceService {
 	@RequestMapping(method={RequestMethod.GET},value={"/buckets"}, produces = MediaType.APPLICATION_JSON_VALUE)
 	@ResponseBody
 	public Set<Integer> getBuckets() {
-		return bucketsToNodesStatistics.getBucketsInCurrentNode();
+		return bucketsInCurrentNode.getBucketsInCurrentNode();
 	}
 	
 	@ApiOperation("Return the full content of a bucket")

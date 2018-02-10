@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.BucketsInCurrentNode;
 import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
 @Component
@@ -33,7 +33,7 @@ public class KeyValueDAOFileSystem implements KeyValueDao {
 	private Path storeDirectory;
 	
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
+	private BucketsInCurrentNode bucketsInCurrentNode;
 	
 	@PostConstruct
 	public void init() throws IOException {
@@ -43,7 +43,7 @@ public class KeyValueDAOFileSystem implements KeyValueDao {
 	@Override
 	public boolean saveOrUpdate(KeyValue keyValue) {
 		String key = keyValue.getKey();
-		int bucket = bucketsToNodesStatistics.bucket(key);
+		int bucket = bucketsInCurrentNode.bucket(key);
 
 		logger.debug("Save key {} in bucket {}", key, bucket);
 		
@@ -62,7 +62,7 @@ public class KeyValueDAOFileSystem implements KeyValueDao {
 
 	@Override
 	public Optional<KeyValue> load(String key) {
-		int bucket = bucketsToNodesStatistics.bucket(key);
+		int bucket = bucketsInCurrentNode.bucket(key);
 		
 		logger.debug("Load key {} from bucket {}", key, bucket);
 		
@@ -84,7 +84,7 @@ public class KeyValueDAOFileSystem implements KeyValueDao {
 
 	@Override
 	public Optional<KeyValue> delete(String key) {
-		int bucket = bucketsToNodesStatistics.bucket(key);
+		int bucket = bucketsInCurrentNode.bucket(key);
 		
 		logger.debug("Delete key {} from bucket {}", key, bucket);
 		

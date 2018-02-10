@@ -35,7 +35,7 @@ import cucumber.api.java.After;
 import cucumber.api.java.en.Given;
 import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.BucketsInCurrentNode;
 import ro.amihai.dht.integrationtests.SpringIntegrationStepDef;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDAOFileSystem;
 import ro.amihai.dht.node.NodeProperties;
@@ -49,7 +49,7 @@ public class KeyValueStorageStepsDef extends SpringIntegrationStepDef {
 	private Logger logger = LoggerFactory.getLogger(KeyValueStorageStepsDef.class);
 	
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
+	private BucketsInCurrentNode bucketsInCurrentNode;
 	
 	@Autowired
 	private NodeProperties nodeProperties;
@@ -75,12 +75,12 @@ public class KeyValueStorageStepsDef extends SpringIntegrationStepDef {
 	
 	@After
 	public void clearKeyValueStorage() {
-		bucketsToNodesStatistics.getBucketsInCurrentNode().forEach(this::cleanBucket);
+		bucketsInCurrentNode.getBucketsInCurrentNode().forEach(this::cleanBucket);
 	}
 	
 	@Given("^that the bucket for key \"([^\"]*)\" is stored on current node$")
 	public void that_the_bucket_for_key_is_stored_on_current_node(String key) {
-		assertTrue(format("The key %s is not stored on current node", key), bucketsToNodesStatistics.isBucketOnCurrentNode(key));
+		assertTrue(format("The key %s is not stored on current node", key), bucketsInCurrentNode.isBucketOnCurrentNode(key));
 	}
 	@When("^I call the PUT API \"([^\"]*)\" with the JSON (\\{[^\\}]*\\})$")
 	public void i_call_the_PUT_API_with_the_JSON(String url, String json) throws Throwable {
@@ -92,7 +92,7 @@ public class KeyValueStorageStepsDef extends SpringIntegrationStepDef {
 
 	@Then("^I should see the value \"([^\"]*)\" stored on disk under the key \"([^\"]*)\"$")
 	public void i_should_see_the_value_stored_on_disk_under_the_key(String expectedValue, String key) throws IOException {
-		int bucket = bucketsToNodesStatistics.bucket(key);
+		int bucket = bucketsInCurrentNode.bucket(key);
 		logger.debug("The key {} should be in the bucket {}", key, bucket);
 		Path keyFilePath = Paths.get(storeDirectory.toString(), valueOf(bucket), key);
 		

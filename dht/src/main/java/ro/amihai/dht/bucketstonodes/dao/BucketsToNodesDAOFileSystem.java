@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodesJsonParser;
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
 import ro.amihai.dht.node.NodeAddress;
 
 @Component
@@ -33,9 +32,6 @@ public class BucketsToNodesDAOFileSystem implements BucketsToNodesDAO {
 	
 	@Value("${bucketsToNodes.storeDirectory}")
 	private Path storeDirectory;
-	
-	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
 	
 	@Autowired
 	private BucketsToNodesJsonParser bucketsToNodesJsonParser;
@@ -50,13 +46,11 @@ public class BucketsToNodesDAOFileSystem implements BucketsToNodesDAO {
 	@Override
 	public void saveOrUpdate(Map<Integer, Set<NodeAddress>> bucketsToNodes) {
 		bucketsToNodes.entrySet().forEach(this::storeBucketOnDisk);
-		bucketsToNodesStatistics.updateStatistics();
 	}
 	
 	@Override
 	public void saveOrUpdate(Integer bucket, Set<NodeAddress> nodeAddreses) {
 		storeBucketOnDisk(bucket, nodeAddreses);
-		bucketsToNodesStatistics.updateStatistics();
 	}
 	
 	@Override

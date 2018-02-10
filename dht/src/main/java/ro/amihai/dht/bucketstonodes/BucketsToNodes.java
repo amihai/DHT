@@ -5,6 +5,7 @@ import static java.util.function.Function.identity;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
+import java.util.Observable;
 import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -24,7 +25,7 @@ import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 
 @Component
-public class BucketsToNodes {
+public class BucketsToNodes extends Observable {
 	
 	private Logger logger = LoggerFactory.getLogger(BucketsToNodes.class);
 	
@@ -59,22 +60,27 @@ public class BucketsToNodes {
 						set1.addAll(set2); return set1;
 						})
 					);
-		
+		setChanged();
 		fileSystemDAO.saveOrUpdate(bucketsToNodes);
+		notifyObservers();
 	}
 	
 	public void add(Integer bucket, NodeAddress nodeAdress) {
 		logger.debug("Add bucket {} to node {} mapping", bucket, nodeAdress);
 		
 		bucketsToNodes.getOrDefault(bucket, Collections.emptySet()).add(nodeAdress);
+		setChanged();
 		fileSystemDAO.saveOrUpdate(bucket, bucketsToNodes.get(bucket));
+		notifyObservers();
 	}
 	
 	public void remove(Integer bucket, NodeAddress nodeAddress) {
 		logger.debug("Remove bucket {} to node {} mapping", bucket, nodeAddress);
 		
 		bucketsToNodes.getOrDefault(bucket, Collections.emptySet()).remove(nodeAddress);
+		setChanged();
 		fileSystemDAO.saveOrUpdate(bucket, bucketsToNodes.get(bucket));
+		notifyObservers();
 	}
 	
 	public void remove(NodeAddress nodeAddress) {
@@ -104,5 +110,6 @@ public class BucketsToNodes {
 					identity(), 
 					i -> Stream.of(nodeProperties.getCurrentNodeAddress()).collect(Collectors.toSet())));
 	}
+
 	
 }

@@ -18,7 +18,9 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodes;
-import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
+import ro.amihai.dht.bucketstonodes.observer.AllNodes;
+import ro.amihai.dht.bucketstonodes.observer.BucketsInCurrentNode;
+import ro.amihai.dht.bucketstonodes.observer.NodesToBuckets;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 import ro.amihai.dht.service.health.NodeHealth;
@@ -46,7 +48,14 @@ public class BucketsBalancer {
 	private NodeProperties nodeProperties;
 	
 	@Autowired
-	private BucketsToNodesStatistics bucketsToNodesStatistics;
+	private AllNodes allNodes;
+	
+	@Autowired
+	private NodesToBuckets nodesToBuckets;
+	
+	@Autowired
+	private BucketsInCurrentNode bucketsInCurrentNode;
+	
 	@Autowired
 	private BucketsBalancerOperations bucketsBalancerOperations;
 	
@@ -84,7 +93,7 @@ public class BucketsBalancer {
 	}
 
 	private void transferBucketsFromBusyNodes() {
-		int noOfBucketsInCurrentNode = bucketsToNodesStatistics.getBucketsInCurrentNode().size();
+		int noOfBucketsInCurrentNode = bucketsInCurrentNode.getBucketsInCurrentNode().size();
 		logger.debug("NoOfBucketsInCurrentNode {}", noOfBucketsInCurrentNode);
 		
 		//Than check if any other node is loaded more than currentNode
@@ -93,7 +102,7 @@ public class BucketsBalancer {
 			logger.info("Start to search a busy node to transfer from");
 			
 			//Search if other nodes are busy and transfer some buckets from them
-			Optional<Entry<NodeAddress, List<Integer>>> busyNode = bucketsToNodesStatistics.getNodesToBuckets()
+			Optional<Entry<NodeAddress, List<Integer>>> busyNode = nodesToBuckets.getNodesToBuckets()
 				.entrySet().stream()
 				.filter(entry -> entry.getValue().size() > minimumNumberOfBucketsPerNode()) //Filter the nodes that are not busy
 				.sorted((e1, e2) -> e2.getValue().size() - e1.getValue().size()) //Transfer from the busiest node
@@ -101,7 +110,7 @@ public class BucketsBalancer {
 			
 			if (busyNode.isPresent()) {
 				Optional<Integer> bucketToTransfer = busyNode.get().getValue().stream()
-					.filter(bucket -> ! bucketsToNodesStatistics.getBucketsInCurrentNode().contains(bucket)) //Filter buckets already on this node
+					.filter(bucket -> ! bucketsInCurrentNode.getBucketsInCurrentNode().contains(bucket)) //Filter buckets already on this node
 					.findAny();
 				
 				if (bucketToTransfer.isPresent()) {
@@ -121,7 +130,7 @@ public class BucketsBalancer {
 	}
 	
 	private int minimumNumberOfBucketsPerNode() {
-		long numberOfNodes = bucketsToNodesStatistics.getNumberOfNodes();
+		long numberOfNodes = allNodes.getNumberOfNodes();
 		logger.debug("Total number of nodes: {}", numberOfNodes);
 		
 		int noOfBuckets = nodeProperties.getNoOfBuckets();
