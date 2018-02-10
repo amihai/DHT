@@ -70,11 +70,18 @@ public class BucketsToNodes {
 		fileSystemDAO.saveOrUpdate(bucket, bucketsToNodes.get(bucket));
 	}
 	
-	public void remove(Integer bucket, NodeAddress nodeAdress) {
-		logger.debug("Remove bucket {} to node {} mapping", bucket, nodeAdress);
+	public void remove(Integer bucket, NodeAddress nodeAddress) {
+		logger.debug("Remove bucket {} to node {} mapping", bucket, nodeAddress);
 		
-		bucketsToNodes.getOrDefault(bucket, Collections.emptySet()).remove(nodeAdress);
+		bucketsToNodes.getOrDefault(bucket, Collections.emptySet()).remove(nodeAddress);
 		fileSystemDAO.saveOrUpdate(bucket, bucketsToNodes.get(bucket));
+	}
+	
+	public void remove(NodeAddress nodeAddress) {
+		logger.debug("Remove Node {} from all buckets", nodeAddress);
+		bucketsToNodes.entrySet().stream()
+		.filter(entry -> entry.getValue().contains(nodeAddress))
+		.forEach(entry -> remove(entry.getKey(), nodeAddress));
 	}
 	
 	public void removeAll(Map<Integer, Set<NodeAddress>> bucketsToNodes) {

@@ -25,10 +25,11 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import ro.amihai.dht.bucketstonodes.BucketsToNodes;
 import ro.amihai.dht.bucketstonodes.BucketsToNodesService;
+import ro.amihai.dht.integrationtests.SpringIntegrationStepDef;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 
-@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, properties= {"bucketsToNodes.storeDirectory=target/bucketsToNodes2", "server.port=8001"})
+@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT, properties= {"server.port=8001"})
 public class BucketsToNodesServiceStepsDef extends SpringIntegrationStepDef {
 
 	@Autowired
@@ -106,7 +107,7 @@ public class BucketsToNodesServiceStepsDef extends SpringIntegrationStepDef {
 
 	@Then("^the new Buckets To Nodes mapping is stored on disk for recovery$")
 	public void the_new_Buckets_To_Nodes_mapping_is_stored_on_disk_for_recovery() throws Throwable {
-	    Integer noOfBucketsMappings = (int) Files.list(Paths.get("target", "bucketsToNodes2")).count();
+	    Integer noOfBucketsMappings = (int) Files.list(Paths.get("target", "node_8001/bucketsToNodes")).count();
 	    
 	    assertEquals("Buckets TO Nodes mapping is not stored on disk", Integer.valueOf(nodeProperties.getNoOfBuckets()), noOfBucketsMappings);
 	}
