@@ -12,7 +12,7 @@ public class NodeHealth {
 	private int noOfBuckets;
 	
 	private int gossipSize;
-
+	
 	public NodeStatus getNodeStatus() {
 		return nodeStatus;
 	}
@@ -36,6 +36,5 @@ public class NodeHealth {
 	public void setGossipSize(int gossipSize) {
 		this.gossipSize = gossipSize;
 	}
-	
 	
 }

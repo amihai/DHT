@@ -22,7 +22,8 @@ Feature:
     Scenario: The GET API Return 404 status code if the key is not on disk        
         Given that the bucket for key "my-key" is stored on current node
         And I don't have the key "my-key" stored on current node
-        When I call the GET API "/keyValue/my-key" I should receive the 404 HTTP status code
+        When I call the GET API "/keyValue/my-key"
+        Then I should receive an empty KeyValue
         
     Scenario: Node expose a rest API that allow us to remove a key from disk         
         Given that the bucket for key "my-key" is stored on current node

@@ -4,6 +4,7 @@ import static java.lang.String.format;
 import static java.lang.String.valueOf;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
@@ -23,9 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import com.fasterxml.jackson.core.JsonParseException;
@@ -129,19 +128,6 @@ public class KeyValueStorageStepsDef extends SpringIntegrationStepDef {
 		keyValueDAOFileSystem.delete(key);
 	}
 	
-	@When("^I call the GET API \"([^\"]*)\" I should receive the (\\d+) HTTP status code$")
-	public void i_call_the_GET_API_I_should_receive_the_HTTP_status_code(String url, int statusCode) throws URISyntaxException {
-		URI uriGetJson = nodeProperties.getCurrentNodeAddress().getURI(url, null);
-		HttpStatus actualHttpStatus = null;
-		try {
-			getKeyResponse = restTemplate.getForEntity(uriGetJson, KeyValue.class);
-			actualHttpStatus = getKeyResponse.getStatusCode();
-		} catch (HttpClientErrorException ex) {
-			actualHttpStatus = ex.getStatusCode();
-		}
-		assertEquals("Invalid status code if key doesn't exists", HttpStatus.valueOf(statusCode), actualHttpStatus);
-	}
-	
 	@When("^I call the GET DELETE \"([^\"]*)\"$")
 	public void i_call_the_GET_DELETE(String url) throws Throwable {
 		URI uriDeleteJson = nodeProperties.getCurrentNodeAddress().getURI(url, null);
@@ -161,6 +147,11 @@ public class KeyValueStorageStepsDef extends SpringIntegrationStepDef {
 			.forEach(key -> keyValueDAOFileSystem.saveOrUpdate(new KeyValue(key, key)));
 		
 		TimeUnit.MILLISECONDS.sleep(2 * bucketsSizeRefreshRate);
+	}
+	
+	@Then("^I should receive an empty KeyValue$")
+	public void i_should_receive_an_empty_KeyValue() throws Throwable {
+		assertNull("The answer is not empty", getKeyResponse.getBody());
 	}
 
 	@When("^I call the GET API \"([^\"]*)\" I should receive the value (\\d+)$")

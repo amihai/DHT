@@ -1,5 +1,7 @@
 package ro.amihai.dht.keyvaluestore;
 
+import static org.springframework.http.ResponseEntity.accepted;
+
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -44,7 +46,7 @@ public class KeyValueStoreService {
 		Optional<KeyValue> keyValue = keyValueStorage.load(key);
 		return keyValue
 				.map(ResponseEntity::ok)
-				.orElseGet(() -> ResponseEntity.notFound().build());
+				.orElseGet(accepted()::build);
 	}
 	
 	@ApiOperation("Return the number of uniques Pairs in the Storage")
@@ -63,6 +65,6 @@ public class KeyValueStoreService {
 		Optional<KeyValue> keyValue = keyValueStorage.delete(key);
 		return keyValue
 				.map(ResponseEntity::ok)
-				.orElseGet(() -> ResponseEntity.unprocessableEntity().body(null));
+				.orElseGet(accepted()::build);
 	}
 }

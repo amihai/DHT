@@ -54,11 +54,15 @@ public class BucketsBalancer {
 	private NodeHealth nodeHealth;
 	
 	@Autowired
-	private ParentNodesBalancedLatch parentNodesBalancedLatch;
+	private OverlayNetworkStableLatch overlayNetworkBalanced;
+	
+	@Autowired
+	private ParentNodesBalancedLatch parentNodesBalanced;
 	
 	@Scheduled(fixedRateString = "${bucketsToNodes.balancing.rate}", initialDelayString = "${bucketsToNodes.balancing.initialDelay}")
 	public void balanceBuckets() throws InterruptedException {
-		parentNodesBalancedLatch.awaitForAParentNodeToBeBalanced();
+		overlayNetworkBalanced.await();
+		parentNodesBalanced.await();
 		
 		logger.info("Start the Buckets balancing");
 		
