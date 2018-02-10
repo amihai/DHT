@@ -19,8 +19,8 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import ro.amihai.dht.keyvaluestore.KeyValue;
 import ro.amihai.dht.node.NodeAddress;
+import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
 @Component
 public class GossipRegistry {

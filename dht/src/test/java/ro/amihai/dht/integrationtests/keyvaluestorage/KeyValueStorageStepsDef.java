@@ -37,9 +37,9 @@ import cucumber.api.java.en.Then;
 import cucumber.api.java.en.When;
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
 import ro.amihai.dht.integrationtests.SpringIntegrationStepDef;
-import ro.amihai.dht.keyvaluestore.KeyValue;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDAOFileSystem;
 import ro.amihai.dht.node.NodeProperties;
+import ro.amihai.dht.service.keyvaluestore.KeyValue;
 import ro.amihai.dht.tests.util.RandomKeySpliterator;
 
 

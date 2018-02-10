@@ -24,9 +24,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
-import ro.amihai.dht.health.NodeHealth;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
+import ro.amihai.dht.service.health.NodeHealth;
 
 /**
  * For performance, this class cache some statistics that can be retrieved from BucketsToNodes. This statistics are modified only when the BucketsToNodeIsModified

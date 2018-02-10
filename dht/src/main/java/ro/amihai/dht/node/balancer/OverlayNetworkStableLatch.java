@@ -19,9 +19,9 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import ro.amihai.dht.gossip.GossipMemebers;
-import ro.amihai.dht.health.NodeHealth;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
+import ro.amihai.dht.service.health.NodeHealth;
 
 @Component
 public class OverlayNetworkStableLatch {

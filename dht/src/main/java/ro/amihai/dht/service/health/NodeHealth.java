@@ -1,6 +1,6 @@
-package ro.amihai.dht.health;
+package ro.amihai.dht.service.health;
 
-import static ro.amihai.dht.health.NodeStatus.UNBALANCED;
+import static ro.amihai.dht.service.health.NodeStatus.UNBALANCED;
 
 import org.springframework.stereotype.Component;
 

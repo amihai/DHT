@@ -1,4 +1,4 @@
-package ro.amihai.dht.health;
+package ro.amihai.dht.service.health;
 
 public enum NodeStatus {
 	BALANCED, UNBALANCED;

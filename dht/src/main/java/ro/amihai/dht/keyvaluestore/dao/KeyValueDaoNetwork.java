@@ -12,8 +12,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
-import ro.amihai.dht.keyvaluestore.KeyValue;
 import ro.amihai.dht.node.NodeAddress;
+import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
 @Component
 public class KeyValueDaoNetwork implements KeyValueDao {

@@ -1,6 +1,6 @@
 package ro.amihai.dht.gossip;
 
-import static ro.amihai.dht.health.NodeStatus.UNBALANCED;
+import static ro.amihai.dht.service.health.NodeStatus.UNBALANCED;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -15,8 +15,8 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import ro.amihai.dht.health.NodeHealth;
 import ro.amihai.dht.node.NodeAddress;
+import ro.amihai.dht.service.health.NodeHealth;
 
 @Component
 public class GossipScheduler {

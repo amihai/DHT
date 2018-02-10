@@ -2,7 +2,7 @@ package ro.amihai.dht.keyvaluestore.dao;
 
 import java.util.Optional;
 
-import ro.amihai.dht.keyvaluestore.KeyValue;
+import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
 public interface KeyValueDao {
 

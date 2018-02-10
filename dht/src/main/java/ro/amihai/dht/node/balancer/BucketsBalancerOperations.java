@@ -28,10 +28,10 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodes;
 import ro.amihai.dht.gossip.GossipRegistry;
-import ro.amihai.dht.keyvaluestore.KeyValue;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDAOFileSystem;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
+import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
 @Component
 public class BucketsBalancerOperations {

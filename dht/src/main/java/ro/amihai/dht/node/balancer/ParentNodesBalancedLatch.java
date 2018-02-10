@@ -19,9 +19,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import ro.amihai.dht.health.NodeHealth;
-import ro.amihai.dht.health.NodeStatus;
 import ro.amihai.dht.node.NodeProperties;
+import ro.amihai.dht.service.health.NodeHealth;
+import ro.amihai.dht.service.health.NodeStatus;
 
 @Component
 public class ParentNodesBalancedLatch {

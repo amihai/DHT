@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
-import ro.amihai.dht.keyvaluestore.KeyValue;
-import ro.amihai.dht.keyvaluestore.KeyValueStorage;
+import ro.amihai.dht.service.keyvaluestore.KeyValue;
+import ro.amihai.dht.service.keyvaluestore.KeyValueStorage;
 
 /**
  * This REST service will be used by the internal topology balancing mechanism

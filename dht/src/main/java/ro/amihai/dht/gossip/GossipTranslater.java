@@ -7,8 +7,8 @@ import org.springframework.stereotype.Component;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodes;
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
-import ro.amihai.dht.keyvaluestore.KeyValue;
 import ro.amihai.dht.keyvaluestore.dao.KeyValueDAOFileSystem;
+import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
 /**
  * Apply a Gossip on the Current Node 

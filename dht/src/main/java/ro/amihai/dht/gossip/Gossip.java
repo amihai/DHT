@@ -6,8 +6,8 @@ import java.util.UUID;
 
 import javax.validation.constraints.NotNull;
 
-import ro.amihai.dht.keyvaluestore.KeyValue;
 import ro.amihai.dht.node.NodeAddress;
+import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
 public class Gossip {
 

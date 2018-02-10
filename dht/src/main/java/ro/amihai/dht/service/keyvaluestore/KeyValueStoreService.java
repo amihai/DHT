@@ -1,4 +1,4 @@
-package ro.amihai.dht.keyvaluestore;
+package ro.amihai.dht.service.keyvaluestore;
 
 import static org.springframework.http.ResponseEntity.accepted;
 

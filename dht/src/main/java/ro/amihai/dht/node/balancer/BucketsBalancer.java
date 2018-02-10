@@ -1,7 +1,7 @@
 package ro.amihai.dht.node.balancer;
 
-import static ro.amihai.dht.health.NodeStatus.BALANCED;
-import static ro.amihai.dht.health.NodeStatus.UNBALANCED;
+import static ro.amihai.dht.service.health.NodeStatus.BALANCED;
+import static ro.amihai.dht.service.health.NodeStatus.UNBALANCED;
 
 import java.util.List;
 import java.util.Map.Entry;
@@ -19,9 +19,9 @@ import org.springframework.stereotype.Component;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodes;
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
-import ro.amihai.dht.health.NodeHealth;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
+import ro.amihai.dht.service.health.NodeHealth;
 
 /**
  * Scheduler that balance the buckets inside topology. 

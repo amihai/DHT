@@ -1,4 +1,4 @@
-package ro.amihai.dht.health;
+package ro.amihai.dht.service.health;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;

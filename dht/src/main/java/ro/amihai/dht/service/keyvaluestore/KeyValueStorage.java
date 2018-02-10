@@ -1,4 +1,4 @@
-package ro.amihai.dht.keyvaluestore;
+package ro.amihai.dht.service.keyvaluestore;
 
 import static java.lang.String.valueOf;
 import static java.util.Collections.emptyList;

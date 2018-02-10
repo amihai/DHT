@@ -22,7 +22,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import ro.amihai.dht.bucketstonodes.BucketsToNodesStatistics;
-import ro.amihai.dht.keyvaluestore.KeyValue;
+import ro.amihai.dht.service.keyvaluestore.KeyValue;
 
 @Component
 public class KeyValueDAOFileSystem implements KeyValueDao {

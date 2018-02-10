@@ -1,4 +1,4 @@
-package ro.amihai.dht.keyvaluestore;
+package ro.amihai.dht.service.keyvaluestore;
 
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Pattern;
