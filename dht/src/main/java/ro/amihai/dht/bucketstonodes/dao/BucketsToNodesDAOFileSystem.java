@@ -21,7 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
-import ro.amihai.dht.bucketstonodes.BucketsToNodesJsonParser;
+import ro.amihai.dht.bucketstonodes.BucketsToNodesMarshaller;
 import ro.amihai.dht.node.NodeAddress;
 
 @Component
@@ -34,7 +34,7 @@ public class BucketsToNodesDAOFileSystem implements BucketsToNodesDAO {
 	private Path storeDirectory;
 	
 	@Autowired
-	private BucketsToNodesJsonParser bucketsToNodesJsonParser;
+	private BucketsToNodesMarshaller bucketsToNodesMarshaller;
 	
 	private String BUCKET_FILE_NAME = "%d";
 	
@@ -61,7 +61,7 @@ public class BucketsToNodesDAOFileSystem implements BucketsToNodesDAO {
 						.collect( 
 								toConcurrentMap(
 										this::bucketFromFileName, 
-										bucketsToNodesJsonParser::readNodeAddressesFromFile)
+										bucketsToNodesMarshaller::readNodeAddressesFromFile)
 								);
 			return ofNullable(bucketsToNodes.isEmpty() ? null : bucketsToNodes);
 		} catch (IOException e) {
@@ -80,7 +80,7 @@ public class BucketsToNodesDAOFileSystem implements BucketsToNodesDAO {
 	
 	private boolean storeBucketOnDisk(Integer bucket, Set<NodeAddress> nodeAddresses) {
 		Path bucketFilePath = Paths.get(storeDirectory.toString(), format(BUCKET_FILE_NAME, bucket));
-		return bucketsToNodesJsonParser.writeNodeAddressesToFile(bucketFilePath.toFile(), nodeAddresses);
+		return bucketsToNodesMarshaller.writeNodeAddressesToFile(bucketFilePath.toFile(), nodeAddresses);
 	}
 
 }

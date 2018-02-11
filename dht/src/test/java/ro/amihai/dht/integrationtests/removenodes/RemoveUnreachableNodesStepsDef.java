@@ -1,10 +1,9 @@
 package ro.amihai.dht.integrationtests.removenodes;
 
+import static java.util.stream.IntStream.rangeClosed;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 
-import java.util.stream.IntStream;
-
-import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -44,8 +43,8 @@ public class RemoveUnreachableNodesStepsDef extends SpringIntegrationStepDef {
 	}
 
 	@Given("^the unreachable Node with host \"([^\"]*)\" and port \"([^\"]*)\" is add to the Buckets To Nodes Mapping$")
-	public void the_unreachable_Node_with_host_and_port_is_add_to_the_Buckets_To_Nodes_Mapping(String host, int port) throws Throwable {
-		IntStream.rangeClosed(1, maxNoOfFailures)
+	public void the_unreachable_Node_with_host_and_port_is_add_to_the_Buckets_To_Nodes_Mapping(String host, int port) {
+		rangeClosed(1, maxNoOfFailures)
 			.forEach(bucket -> {
 				bucketsToNodes.add(bucket, new NodeAddress(host, port));
 				bucketsToNodes.remove(bucket, nodeProperties.getCurrentNodeAddress());
@@ -54,13 +53,13 @@ public class RemoveUnreachableNodesStepsDef extends SpringIntegrationStepDef {
 	}
 
 	@When("^the Buckets Balancing is running$")
-	public void the_Buckets_Balancing_is_running() throws Throwable {
+	public void the_Buckets_Balancing_is_running() throws InterruptedException {
 		bucketsBalancer.balanceBuckets();
 	}
 
 	@Then("^the Node with host \"([^\"]*)\" and port \"([^\"]*)\" is removed from the Buckets To Nodes Mapping$")
-	public void the_Node_with_host_and_port_is_removed_from_the_Buckets_To_Nodes_Mapping(String host, int port) throws Throwable {
-		Assert.assertFalse("The Unreachable Node was not removed",  allNodes.getAllNodes().contains(new NodeAddress(host, port)));
+	public void the_Node_with_host_and_port_is_removed_from_the_Buckets_To_Nodes_Mapping(String host, int port) {
+		assertFalse("The Unreachable Node was not removed",  allNodes.getAllNodes().contains(new NodeAddress(host, port)));
 	}
 
 }

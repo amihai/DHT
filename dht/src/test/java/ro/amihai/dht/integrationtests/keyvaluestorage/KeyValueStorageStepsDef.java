@@ -144,7 +144,8 @@ public class KeyValueStorageStepsDef extends SpringIntegrationStepDef {
 	public void that_distinct_pairs_of_key_value_are_stored_on_disk(int size) throws InterruptedException {
 		StreamSupport.stream(randomKeySpliterator, false)
 			.limit(size)
-			.forEach(key -> keyValueDAOFileSystem.saveOrUpdate(new KeyValue(key, key)));
+			.map(key -> new KeyValue(key, key))
+			.forEach(keyValueDAOFileSystem::saveOrUpdate);
 		
 		TimeUnit.MILLISECONDS.sleep(2 * bucketsSizeRefreshRate);
 	}

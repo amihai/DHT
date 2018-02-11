@@ -26,7 +26,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import ro.amihai.dht.bucketstonodes.BucketsToNodesJsonParser;
+import ro.amihai.dht.bucketstonodes.BucketsToNodesTypeConvertor;
 import ro.amihai.dht.bucketstonodes.observer.BucketsInCurrentNode;
 import ro.amihai.dht.gossip.GossipMemebers;
 import ro.amihai.dht.node.NodeAddress;
@@ -54,7 +54,7 @@ public class BucketsSizeCache {
 	private RestTemplate restTemplate;
 	
 	@Autowired
-	private BucketsToNodesJsonParser bucketsToNodesJsonParser;
+	private BucketsToNodesTypeConvertor bucketsToNodesTypeConvertor;
 	
 	@Scheduled(fixedRateString="${bucketsSizeCache.refresh.rate}")
 	private void updateBucketsSizeCache() {
@@ -106,7 +106,7 @@ public class BucketsSizeCache {
 			ResponseEntity<Map> response = restTemplate.getForEntity(uriGetBucketsSize, Map.class);
 			if (response.getStatusCode().is2xxSuccessful()) {
 				Map<String, Map<String, Object>> jsonAsMap = response.getBody();
-				return Optional.ofNullable(bucketsToNodesJsonParser.mapToBucketsSize(jsonAsMap));
+				return Optional.ofNullable(bucketsToNodesTypeConvertor.toBuckesSizeMap(jsonAsMap));
 			}
 		} catch (URISyntaxException e) {
 			logger.error("Cannot read the buckets size from node {}:", nodeAddress, e);

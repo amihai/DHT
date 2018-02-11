@@ -1,5 +1,10 @@
 package ro.amihai.dht.tests.util;
 
+import static java.util.Collections.shuffle;
+import static java.util.function.Function.identity;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.IntStream.rangeClosed;
+
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -19,23 +24,27 @@ public class RandomKeyGenerator {
 	@PostConstruct
 	private void init() {
 		allowedCharacters = Stream.of(
-				IntStream.rangeClosed('a', 'z').boxed(), 
-				IntStream.rangeClosed('A', 'Z').boxed())
-		.flatMap(Function.identity())
-		.map(i -> Character.toString((char)i.intValue()))
-		.collect(Collectors.toList());
+				rangeClosed('a', 'z').boxed(), 
+				rangeClosed('A', 'Z').boxed())
+		.flatMap(identity())
+		.map(this::charToString)
+		.collect(toList());
 		
 		allowedCharacters.add("-");
 		allowedCharacters.add("_");
 		
-		Collections.shuffle(allowedCharacters);
+		shuffle(allowedCharacters);
 	}
 	
 	public String next(int size) {
-		Collections.shuffle(allowedCharacters);
+		shuffle(allowedCharacters);
 		
 		return allowedCharacters.stream()
 			.limit(size)
 			.collect(Collectors.joining());
+	}
+	
+	String charToString(Integer charCode) {
+		return Character.toString((char)charCode.intValue());
 	}
 }

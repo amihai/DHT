@@ -43,7 +43,9 @@ public class BucketsToNodes extends Observable {
 	@PostConstruct
 	public void init() {
 		logger.debug("Initialize the mapping");
-		bucketsToNodes = networkDAO.load().orElseGet(() -> fileSystemDAO.load().orElseGet(this::initialize) ); 
+		bucketsToNodes = networkDAO.load()
+								.orElseGet(() -> fileSystemDAO.load()
+								.orElseGet(this::initialize)); 
 		fileSystemDAO.saveOrUpdate(bucketsToNodes);
 	}
 
@@ -108,7 +110,9 @@ public class BucketsToNodes extends Observable {
 			.boxed()
 			.collect(Collectors.toConcurrentMap(
 					identity(), 
-					i -> Stream.of(nodeProperties.getCurrentNodeAddress()).collect(Collectors.toSet())));
+					bucket -> Stream.of(nodeProperties.getCurrentNodeAddress())
+							.collect(Collectors.toSet()))
+					);
 	}
 
 	

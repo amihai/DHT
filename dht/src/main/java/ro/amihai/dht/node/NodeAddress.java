@@ -1,7 +1,11 @@
 package ro.amihai.dht.node;
 
+import static java.lang.Integer.parseInt;
+import static java.lang.String.valueOf;
+
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
@@ -40,6 +44,12 @@ public class NodeAddress {
 	
 	public URI getURI (String path, String query) throws URISyntaxException {
 		return new URI("http", null, host, port, path, query, null);
+	}
+	
+	public static NodeAddress fromMap(Map<String, Object> nodeDetails) {
+		String host = valueOf(nodeDetails.get("host"));
+		int port = parseInt(valueOf(nodeDetails.get("port")));
+		return new NodeAddress(host, port);
 	}
 	
 	@Override

@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;
 
-import ro.amihai.dht.bucketstonodes.BucketsToNodesJsonParser;
+import ro.amihai.dht.bucketstonodes.BucketsToNodesTypeConvertor;
 import ro.amihai.dht.node.NodeAddress;
 import ro.amihai.dht.node.NodeProperties;
 
@@ -30,7 +30,7 @@ public class BucketsToNodesDAONetwork implements BucketsToNodesDAO {
 	private RestTemplate restTemplate;
 	
 	@Autowired
-	private BucketsToNodesJsonParser bucketsToNodesJsonParser;
+	private BucketsToNodesTypeConvertor bucketsToNodesTypeConvertor;
 	
 	@Override
 	public Optional<Map<Integer, Set<NodeAddress>>> load() {
@@ -42,7 +42,7 @@ public class BucketsToNodesDAONetwork implements BucketsToNodesDAO {
 				try {
 				ResponseEntity<Map> response = restTemplate.getForEntity(join("/", "http:/", nodeAddress, "bucketsToNodes") , Map.class);
 					if (response.getStatusCode().is2xxSuccessful()) {
-						Map<Integer, Set<NodeAddress>> fromJson = bucketsToNodesJsonParser.fromJson(response.getBody());
+						Map<Integer, Set<NodeAddress>> fromJson = bucketsToNodesTypeConvertor.toBucketsToNodesMap(response.getBody());
 						return Optional.of(fromJson);
 					} else {
 						logger.warn("Node {} is not responding", nodeAddress);
