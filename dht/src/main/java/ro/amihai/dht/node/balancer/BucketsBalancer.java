@@ -97,7 +97,7 @@ public class BucketsBalancer {
 		logger.debug("NoOfBucketsInCurrentNode {}", noOfBucketsInCurrentNode);
 		
 		//Than check if any other node is loaded more than currentNode
-		while(noOfBucketsInCurrentNode < minimumNumberOfBucketsPerNode()) {
+		while(bucketsInCurrentNode.getBucketsInCurrentNode().size() < minimumNumberOfBucketsPerNode()) {
 			nodeHealth.setNodeStatus(UNBALANCED);
 			logger.info("Start to search a busy node to transfer from");
 			

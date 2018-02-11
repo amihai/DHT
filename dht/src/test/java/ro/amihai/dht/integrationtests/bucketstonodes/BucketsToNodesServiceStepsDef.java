@@ -15,7 +15,6 @@ import java.nio.file.Path;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
-import java.util.stream.Collectors;
 
 import org.junit.Assert;
 import org.springframework.beans.factory.annotation.Autowired;
