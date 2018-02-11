@@ -57,7 +57,7 @@ public class KeyValueDaoNetwork implements KeyValueDao {
 				URI uriGetKeyValue = nodeAddress.getURI("/keyValue/" + key, null);
 				ResponseEntity<KeyValue> response = restTemplate.getForEntity(uriGetKeyValue, KeyValue.class);
 				if (response.getStatusCode().is2xxSuccessful()) {
-					return Optional.of(response.getBody());
+					return Optional.ofNullable(response.getBody());
 				} else {
 					logger.error("Cannot find key {} on node {}", key, nodeAddress);
 				}
