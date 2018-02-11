@@ -2,6 +2,7 @@ package ro.amihai.dht.service.keyvaluestore;
 
 import static org.springframework.http.ResponseEntity.accepted;
 
+import java.util.Map;
 import java.util.Optional;
 
 import javax.validation.Valid;
@@ -17,6 +18,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import io.swagger.annotations.ApiOperation;
+import ro.amihai.dht.keyvaluestore.size.BucketSize;
 import ro.amihai.dht.keyvaluestore.size.BucketsSizeCache;
 
 @RestController()
@@ -54,7 +56,9 @@ public class KeyValueStoreService {
 	@ResponseBody
 	public ResponseEntity<Long> getSize() {
 		return ResponseEntity.ok(bucketsSizeCache.getBucketsSize().entrySet()
-				.stream().mapToLong(entry -> entry.getValue().getSize())
+				.stream()
+				.map(Map.Entry::getValue)
+				.mapToLong(BucketSize::getSize)
 				.sum());
 	}
 	

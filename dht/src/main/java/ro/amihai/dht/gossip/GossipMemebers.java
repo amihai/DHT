@@ -1,10 +1,11 @@
 package ro.amihai.dht.gossip;
 
 import static java.util.Collections.shuffle;
+import static java.util.stream.Collectors.toList;
+import static java.util.stream.Collectors.toSet;
 
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,8 +37,8 @@ public class GossipMemebers {
 		logger.trace("GossipMembersSize is {}", gossipMembersSize);
 		
 		List<NodeAddress> allNodeExceptCurrent = allNodes.getAllNodes().stream()
-			.filter(node -> ! node.equals(nodeProperties.getCurrentNodeAddress()))
-			.collect(Collectors.toList());
+			.filter(this::excludeCurrentNode)
+			.collect(toList());
 		
 		shuffle(allNodeExceptCurrent);
 		
@@ -45,6 +46,10 @@ public class GossipMemebers {
 		
 		return allNodeExceptCurrent.stream()
 				.limit(gossipMembersSize)
-				.collect(Collectors.toSet());
+				.collect(toSet());
+	}
+	
+	private boolean excludeCurrentNode(NodeAddress nodeAddress) {
+		return ! nodeAddress.equals(nodeProperties.getCurrentNodeAddress());
 	}
 }
